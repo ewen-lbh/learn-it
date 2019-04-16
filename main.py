@@ -2,8 +2,9 @@ import random
 import collections
 import re
 from termcolor import cprint, colored
+from pprint import pprint
 
-DATA_FILE = 'learndata/russe.txt'
+DATA_FILE = 'learndata_example.txt'
 SYNTAX = {
     'flags': r'--([\w\-]+) (\w+)'
 }
@@ -14,7 +15,13 @@ AVAILABLE_FLAGS = {
     'case-sensitive':False,
     'ask-for':'values',
     'ask-order':'random',
-    'ask-for-typos':False
+    'ask-for-typos':False,
+    'grade-max':100,
+    'good-grade':0.5,
+    'title':False,
+    'and-syntax':'&&',
+    'or-syntax':'||',
+    'grade-precision':2,
 }
 
 def parse(lines:list) -> tuple:
@@ -23,6 +30,18 @@ def parse(lines:list) -> tuple:
         def _list(flag_val:str) -> list:
             _list = str[1:-1].split(',')
             return [e.strip() for e in _list]
+        def _num(flag_val:str):
+            num = _int = flag_val.replace(' ','')
+            if '.' in flag_val:
+                try:
+                    ret = float(num)
+                except ValueError:
+                    ret = None
+            else:
+                try:
+                    ret = int(num)
+                except ValueError:
+                    ret = None
 
         patt = re.compile(SYNTAX['flags'])
         flags = dict()
@@ -33,7 +52,10 @@ def parse(lines:list) -> tuple:
                 val  = patt.search(line).group(2)
                 # automatic types
                 if val.lower() in ('true','false'):
-                    val = bool(val)
+                    try:
+                        val = bool(val)
+                    except ValueError:
+                        val = None
                 elif val.startswith('[') and val.endswith(']'):
                     val = _list(val)
 
@@ -46,7 +68,7 @@ def parse(lines:list) -> tuple:
         # removes comments and ending \n in lines list
         ret = list()
         for line in lines:
-            line.replace('\\n','')
+            line = line.rstrip('\n')
             if not line.startswith(('#','//')):
                 ret.append(line)
         return ret
@@ -69,12 +91,9 @@ def parse(lines:list) -> tuple:
                 continue
         return data
     
-    print('--RAW--')
-    for line in lines:print(line)
-    
     lines = cleanup(lines)
     print('--CLEANED--')
-    for line in lines:print(line)
+    pprint(lines)
     
     flags, lines = parse_flags(lines)
     print('--PARSED--')
@@ -97,7 +116,13 @@ class FlagsParser:
         for flag, val in real_flags.items():
             setattr(self, flag.replace('-','_'), val)
 
-def handle_flags(data, flags:object):
+    def to_dict(self) -> dict:
+        ret = {}
+        for flag in AVAILABLE_FLAGS.keys():
+            ret[flag] = getattr(self, flag.replace('-','_'))
+        return ret
+
+def handle_flags(data:dict, flags:object) -> tuple:
     # --case-sensitive
     if not flags.case_sensitive:
         data = {k.lower():v.lower() for k, v in data.items()}
@@ -142,12 +167,17 @@ def get_ans(asked, answer, flags) -> bool:
                 return get_ans(asked, answer)
         return False
 
-def mainloop(data, flags) -> None:
+def test_loop(data, flags) -> tuple:
+    found = list()
+    notfound = list()
     for asked, answer in data.items():
         if get_ans(asked, answer, flags):
-            cprint("Trouvé !","green")
+            cprint("Correct !","green")
+            found.append(asked)
         else:
-            cprint("La réponse était : {}".format(answer), 'red')
+            cprint("The correct answer was: {}".format(answer), 'red')
+            notfound.append(asked)
+    
 
 
 def main():
@@ -155,10 +185,24 @@ def main():
     FLAGS = FlagsParser(FLAGS)
     DATA  = handle_flags(DATA, FLAGS)
     print('===FLAGS===')
-    print(FLAGS)
+    pprint(FLAGS.to_dict())
     print('===DATA===')
-    print(DATA)
-    mainloop(DATA, FLAGS)
-
+    pprint(DATA)
+    if yesno('Test mode ?'):
+        found, notfound = test_loop(DATA, FLAGS)
+        grade = round(len(found) / flags.grade_max, flags.grade_precision)
+        color = 'green' if grade >= flags.grade_max * flags.good_grade else 'red'
+        cprint('Your grade: {}/{} ({}/{})'.format(grade,int(flags.grade_max), len(found),len(DATA)), color)    
+    else:
+        found, notfound = train_loop(DATA, FLAGS)
+        
+    if len(notfound):
+        cprint("You need to learn about:",'red')
+        maxlen = max([len(e) for e in DATA.keys()])
+        for asked,answer in DATA.items():
+            sp = ' ' * (3 + (maxlen - len(asked)))
+            print ('{}{}:{}'.format(asked,sp,answer))
+            
+    
 if __name__ == '__main__':
     main()

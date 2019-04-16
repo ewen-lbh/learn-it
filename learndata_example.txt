@@ -1,0 +1,20 @@
+--whitelist [spam,eggs,foo]
+--and-syntax &
+--ask-sentence What's <> ?
+--ask-for both
+--ask-for-typos true
+--grade-max 20
+--good-grade 16
+--title Example test
+
+foo
+bar & quux
+
+baz
+spam
+
+eggs
+spam
+
+spam
+wheel
