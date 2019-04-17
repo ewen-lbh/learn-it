@@ -4,7 +4,6 @@ import random
 import collections
 import re
 from termcolor import cprint
-
 from Core import helpers
 
 DATA_FILE = 'learndata_example.txt'
@@ -25,23 +24,25 @@ MODES_PRETTY = {
 }
 
 FLAGS_DEFAULTS = {
-    'whitelist'                  : [],
+    # 'and-syntax'                 : '&&',
+    # 'or-syntax'                  : '||',
+    # 'no-colors'                  : False,
+    # 'warn-unknown-flags'         : True
+    'always-show-grade'          : False,
+    'ask-for'                    : 'values',
+    'ask-for-typos'              : False,
+    'ask-order'                  : 'random',
     'ask-sentence'               : '<>',
     'case-sensitive'             : False,
-    'ask-for'                    : 'values',
-    'ask-order'                  : 'random',
-    'ask-for-typos'              : False,
-    'grade-max'                  : 100,
     'good-grade'                 : 0.5,
-    'title'                      : 'untitled',
-    'and-syntax'                 : '&&',
-    'or-syntax'                  : '||',
+    'grade-max'                  : 100,
     'grade-precision'            : 2,
-    'show-answer-in-testing-mode': True,
-    'always-show-grade'          : False,
     'header'                     : '---- <> ----',
     'header-color'               : 'cyan',
-    'show-items-count'           : DEBUG
+    'show-answer-in-testing-mode': True,
+    'show-items-count'           : DEBUG,
+    'title'                      : 'untitled',
+    'whitelist'                  : [],
 }
 
 # automaticaly get flag types from defaults
@@ -49,6 +50,7 @@ FLAGS_DEFAULTS = {
 FLAGS_TYPES = {flag: type(default) for flag, default in FLAGS_DEFAULTS.items()}
 
 AUTO_ANSWER = False
+
 
 def parse(lines: list) -> tuple:
     def parse_flags(lines):
