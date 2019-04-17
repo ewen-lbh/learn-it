@@ -1,4 +1,4 @@
-# learn-it
+# learn_it!
 
 A script that helps you learn stuff.
 **IMPORTANT NOTICE**: This is still an early work-in-progress project, and the only working version is contained in the `main.old.py` file. Most of the features shown here will not work, though the basics (modes and learndata files) will work.  
