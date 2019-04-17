@@ -10,7 +10,7 @@ from Core import helpers
 DATA_FILE = 'learndata_example.txt'
 DEBUG = False
 SYNTAX = {
-    'flags'   : re.compile(r'--([\w\-]+) (.+)'),  # [0]: trues, [1]: falses
+    'flags'   : re.compile(r'--([\w\-]+)([ =].+)?'),  # [0]: trues, [1]: falses
     'booleans': (('true', 'yes', 'on'), ('false', 'no', 'off')),
     'lists'   : re.compile(r'\[([,\w]+)\]'),
     'comments': re.compile(r'(?://)|(?:#) (.+)')
@@ -48,6 +48,7 @@ FLAGS_DEFAULTS = {
 # warning: this will only work for flags that accept a SINGLE type
 FLAGS_TYPES = {flag: type(default) for flag, default in FLAGS_DEFAULTS.items()}
 
+AUTO_ANSWER = False
 
 def parse(lines: list) -> tuple:
     def parse_flags(lines):
@@ -90,8 +91,14 @@ def parse(lines: list) -> tuple:
             if SYNTAX['flags'].match(line):
                 flag = SYNTAX['flags'].search(line).group(1)
                 val = SYNTAX['flags'].search(line).group(2)
-                # automatic types
-                val = parse_flag_type(flag, val)
+                # we do this because an unmatched regex group (the value one in this case)
+                # assigns a value of None to it. If we specify a flag alone,
+                # we want to set it to true (kinda like bash's flags)
+                if val is None:
+                    val = True
+                else:
+                    # automatic types
+                    val = parse_flag_type(flag, val)
                 # if there wasn't any errors while parsing and converting the
                 # value to its correct type:
                 if val is not None:
@@ -162,6 +169,7 @@ def parse_file(filepath: str) -> tuple:
 
 class FlagsParser:
     def __init__(self, flags: dict):
+        self.ask_order = None
         real_flags = dict()
         for flag, default in FLAGS_DEFAULTS.items():
             # set the value to the corresponding one in the dict, or get its default value
@@ -197,10 +205,12 @@ def handle_flags(data: collections.OrderedDict, flags: FlagsParser) -> tuple:
         shuffled = list(data.items())
         # random.shuffle changes the list *in-place*
         random.shuffle(shuffled)
-        print(shuffled)
         data = collections.OrderedDict()
         for k, v in shuffled:
             data[k] = v
+    elif flags.ask_order == 'alphabetical':
+        data = collections.OrderedDict(sorted(data.keys()))
+
     else:
         data = collections.OrderedDict(**data)
 
@@ -212,11 +222,11 @@ def yesno(msg) -> bool:
 
 
 def get_ans(asked, answer, flags) -> bool:
-    global DEBUG
+    global AUTO_ANSWER
 
     def ask(asked):
         sentence = flags.ask_sentence.replace('<>', asked)
-        return input(sentence + '\n>') if not DEBUG else ''
+        return input(sentence + '\n>') if not AUTO_ANSWER else ''
 
     # ans is the *user's* answer
     # answer is the *correct* answer
@@ -228,7 +238,7 @@ def get_ans(asked, answer, flags) -> bool:
     if ans == answer:
         return True
     else:
-        if flags.ask_for_typos and not DEBUG:
+        if flags.ask_for_typos and not AUTO_ANSWER:
             if yesno("Was this a typo ?"):
                 return get_ans(asked, answer)
         return False
@@ -272,7 +282,7 @@ def train_loop(data: collections.OrderedDict, flags: FlagsParser) -> None:
             # add the question to found
             found.append(asked)
         else:
-            cprint('The correct answer was "{}"'.format(answer))
+            cprint('The correct answer was "{}"'.format(answer), 'red')
 
 
 def recap(data: collections.OrderedDict) -> None:
@@ -353,10 +363,11 @@ def main():
 
     # debug
     global DEBUG
-    print('===FLAGS===')
-    flags.print()
-    print('===DATA===')
-    helpers.pprint_dict(data)
+    if DEBUG:
+        print('===FLAGS===')
+        flags.print()
+        print('===DATA===')
+        helpers.pprint_dict(data)
 
     # print header
     header(flags)
