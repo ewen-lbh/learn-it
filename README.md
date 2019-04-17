@@ -48,7 +48,7 @@ Available flags:
 |warn-unknown-flags|Shows a warning if some flags are declared but unknown|True, False|True  
 |whitelist|Use this to filter the things scanned, useful if you have a huge file and already know most of the things in it, but don't know about some other things|[a,comma,separated,list]|[]|    
 |~~and-syntax~~|What symbol to use when you want to specify that the correct answer has to be *this* **and** *that*, in no particular order. [More explanation](#logical-operators)|&|&&    
-|~~no-colors~~|Deactivate all colors, useful for terminals that don't support [ANSI escape sequences](https://en.wikipedia.org/wiki/ANSI_escape_code#Colors)|True, False|False  
+|~~no-colors~~|Deactivate all colors, useful for terminals that don't support [ANSI escape sequences](https://en.wikipedia.org/wiki/ANSI_escape_code#Platform_support)|True, False|False  
 |~~or-syntax~~|Same as `and-syntax`, but used to specify a logical "or": *this* **or** *that*|, |\|\||    
   
   
