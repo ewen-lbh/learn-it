@@ -15,7 +15,9 @@ The file will be parsed, and the training (or testing, see [modes](#modes)) will
 ### The "learndata" text file format  
 #### Overview  
     --flag-name value  
-    # comment // another comment Thing to learn about (the "key") 
+    # comment 
+    // another comment 
+    Thing to learn about (the "key") 
     Its correct answer (the "value")  
     
     Other thing you should know by heart 
