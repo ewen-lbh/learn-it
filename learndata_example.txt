@@ -1,5 +1,6 @@
 --whitelist [spam,eggs,foo]
 --and-syntax &
+--or-syntax or
 --ask-sentence What's <> ?
 --ask-for both
 --ask-for-typos true
@@ -7,11 +8,13 @@
 --good-grade 16
 --title Example test
 
+# Here we have 2 answers that are required.
 foo
 bar & quux
 
+# Here 'spam' and 'wheels' are both good answers, but you can give only one of them
 baz
-spam
+spam or wheels
 
 eggs
 spam
