@@ -52,7 +52,7 @@ Lists are defined with square brackets and separated by commas **without spaces*
   
 #### Logical operators  
 Two logical operators are supported: *AND* and *OR*  
-Their default syntax is respectively `&&` and `||` (you can change that with the `--and-syntax` and `--or-syntax` flags.  
+Their default syntax is respectively `&&` and `||` (you can change that with the `--and-syntax` and `--or-syntax` flags.)  
 ##### Example  
 Context: a french vocabulary test with synonyms  
   
@@ -61,7 +61,7 @@ Context: a french vocabulary test with synonyms
 Note the spaces around the operators: you could remove those, but since individuals items are *stripped* (spaces preceding and following words are removed),  additional spaces don't affect words  
   
 ##### Escaping the operators symbols  
-You would think that putting `\&&` would consider the first ampersand as a literal ampersand, and would therefore not consider this as a special symbol. This feature is on the roadmap, but does not work for now. That's the main reason why`--<operator>--syntax` flags exist.  
+You would think that putting `\&&` would consider the first ampersand as a literal ampersand, and would therefore not consider this as a special symbol. This feature is on the roadmap, but does not work for now. That's the main reason why`--<operator>-syntax` flags exist.  
      
   
 #### File example  
