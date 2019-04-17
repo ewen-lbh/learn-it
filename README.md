@@ -44,8 +44,8 @@ Available flags:
 |header|Text shown at the beginning of the script. `<>` is replaced with `--title`'s value|<>|\-\-\- <> \-\-\-|  
 |show-answer-in-testing-mode|In testing mode, show the correct answer when the provided answer was wrong. (This behavior is always active in training mode)|True, False|True  
 |show-items-count|Shows a message at the start that says: "Loaded *N* items from *FILE*"|True, False|True  
-|show-unknown-flags|Shows a warning if some flags are declared but unknown|True, False|True  
 |title|Will be used to display a header at the start of the script. If set to `untitled`, the header will not be displayed.|Chemistry test|untitled    
+|warn-unknown-flags|Shows a warning if some flags are declared but unknown|True, False|True  
 |whitelist|Use this to filter the things scanned, useful if you have a huge file and already know most of the things in it, but don't know about some other things|[a,comma,separated,list]|[]|    
 |~~and-syntax~~|What symbol to use when you want to specify that the correct answer has to be *this* **and** *that*, in no particular order. [More explanation](#logical-operators)|&|&&    
 |~~no-colors~~|Deactivate all colors, useful for terminals that don't support [ANSI escape sequences](https://en.wikipedia.org/wiki/ANSI_escape_code#Colors)|True, False|False  
