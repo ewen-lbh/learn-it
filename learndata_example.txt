@@ -7,6 +7,7 @@
 --grade-max 20
 --good-grade 16
 --title Example test
+--show-items-count True
 
 # Note that inline comments are not supported
 # (they must be on separates lines, ie no "value // blah blah blah")

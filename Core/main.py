@@ -3,30 +3,45 @@ import itertools
 import random
 import collections
 import re
-from termcolor import cprint, colored
-from pprint import pprint
+from termcolor import cprint
+
+from Core import helpers
 
 DATA_FILE = 'learndata_example.txt'
+DEBUG = False
 SYNTAX = {
     'flags'   : re.compile(r'--([\w\-]+) (.+)'),  # [0]: trues, [1]: falses
     'booleans': (('true', 'yes', 'on'), ('false', 'no', 'off')),
-    'lists': re.compile(r'\[([,\w]+)\]'),
+    'lists'   : re.compile(r'\[([,\w]+)\]'),
     'comments': re.compile(r'(?://)|(?:#) (.+)')
 }
 
+MESSAGES = {
+    'choose_mode': 'Choose a mode:\n<choices>'
+}
+
+MODES_PRETTY = {
+    'training': 'Training mode', 'testing': 'Testing mode'
+}
+
 FLAGS_DEFAULTS = {
-    'whitelist'      : [],
-    'ask-sentence'   : '<>',
-    'case-sensitive' : False,
-    'ask-for'        : 'values',
-    'ask-order'      : 'random',
-    'ask-for-typos'  : False,
-    'grade-max'      : 100,
-    'good-grade'     : 0.5,
-    'title'          : False,
-    'and-syntax'     : '&&',
-    'or-syntax'      : '||',
-    'grade-precision': 2,
+    'whitelist'                  : [],
+    'ask-sentence'               : '<>',
+    'case-sensitive'             : False,
+    'ask-for'                    : 'values',
+    'ask-order'                  : 'random',
+    'ask-for-typos'              : False,
+    'grade-max'                  : 100,
+    'good-grade'                 : 0.5,
+    'title'                      : 'untitled',
+    'and-syntax'                 : '&&',
+    'or-syntax'                  : '||',
+    'grade-precision'            : 2,
+    'show-answer-in-testing-mode': True,
+    'always-show-grade'          : True,
+    'header'                     : '---- <> ----',
+    'header-color'               : 'cyan',
+    'show-items-count'           : DEBUG
 }
 
 # automaticaly get flag types from defaults
@@ -164,8 +179,11 @@ class FlagsParser:
             ret[flag] = getattr(self, flag.replace('-', '_'))
         return ret
 
+    def print(self):
+        helpers.pprint_dict(self.to_dict())
 
-def handle_flags(data: dict, flags: FlagsParser) -> tuple:
+
+def handle_flags(data: collections.OrderedDict, flags: FlagsParser) -> tuple:
     # --case-sensitive
     if not flags.case_sensitive:
         data = {k.lower(): v.lower() for k, v in data.items()}
@@ -194,9 +212,11 @@ def yesno(msg) -> bool:
 
 
 def get_ans(asked, answer, flags) -> bool:
+    global DEBUG
+
     def ask(asked):
         sentence = flags.ask_sentence.replace('<>', asked)
-        return input(sentence)
+        return input(sentence + '\n>') if not DEBUG else ''
 
     # ans is the *user's* answer
     # answer is the *correct* answer
@@ -208,13 +228,13 @@ def get_ans(asked, answer, flags) -> bool:
     if ans == answer:
         return True
     else:
-        if flags.ask_for_typos:
+        if flags.ask_for_typos and not DEBUG:
             if yesno("Was this a typo ?"):
                 return get_ans(asked, answer)
         return False
 
 
-def test_loop(data, flags) -> tuple:
+def testing_loop(data: collections.OrderedDict, flags: FlagsParser) -> tuple:
     found = list()
     notfound = list()
     for asked, answer in data.items():
@@ -222,32 +242,143 @@ def test_loop(data, flags) -> tuple:
             cprint("Correct !", "green")
             found.append(asked)
         else:
-            cprint("The correct answer was: {}".format(answer), 'red')
+            if flags.show_answer_in_testing_mode:
+                cprint("The correct answer was: {}".format(answer), 'red')
+            else:
+                cprint("Wrong", 'red')
             notfound.append(asked)
+
+        if flags.always_show_grade:
+            show_grade(found, data, flags)
+    return found, notfound
+
+
+def show_grade(found, data: collections.OrderedDict, flags: FlagsParser) -> float:
+    grade = round(len(found) / flags.grade_max, flags.grade_precision)
+    color = 'green' if grade >= flags.grade_max * flags.good_grade else 'red'
+    cprint('Your grade: {}/{} ({}/{})'.format(grade, int(flags.grade_max), len(found), len(data)), color)
+    return grade
+
+
+def train_loop(data: collections.OrderedDict, flags: FlagsParser) -> None:
+    found = list()
+    # if we still have stuff not found
+    while len(found) < len(data.keys()):
+        # randomly pick a question, and get its corresponding answer
+        asked = random.choice(list(data.keys()))
+        answer = data[asked]
+        # if the user replied correctly
+        if get_ans(asked, answer, flags):
+            # add the question to found
+            found.append(asked)
+        else:
+            cprint('The correct answer was "{}"'.format(answer))
+
+
+def recap(data: collections.OrderedDict) -> None:
+    cprint("You need to learn about:", 'red')
+    maxlen = max([len(e) for e in data.keys()])
+    for asked, answer in data.items():
+        sp = ' ' * (3 + (maxlen - len(asked)))
+        print('{}{}:{}'.format(asked, sp, answer))
+
+
+def selection(msg: str, choices: list, shortcuts=True, shortcuts_level: int = 1) -> str:
+    """
+    Ask the user to select a choice in a given choices list. This is NOT case sensitive.
+    :param msg: message to display.
+    The list of choices is generated automatically, insert it in your message by adding "<choices>" in it.
+    :param choices: list of choices to choose from
+    :param shortcuts: whether to use shortcuts or not
+    :param shortcuts_level: shortcuts lengths (>= 1)
+    This is useful when your choices list have choices that start with the same letter(s)
+    :return: a string that is in choices
+    """
+
+    # todo auto-detect shortcuts_level
+
+    if shortcuts_level < 1: shortcuts_level = 1
+
+    # HANDLING SHORTCUTS {
+    if shortcuts:
+        shortcuts_map = {choice[:shortcuts_level]: choice for choice in choices}
+        # remove duplicates from the list of shortcuts, and get the length
+        deduped = list(set(list(shortcuts_map.keys())))
+        # see if shortcuts are unambiguous by seeing if we removed any duplicates
+        # if we removed any, the deduplicated list is shorter than the original shortcut map
+        # this will also be considered ambiguous if deduped_len is greater than original_len, tho
+        # this case should be unreachable.
+        ambiguous_shortcuts = len(choices) != len(deduped)
+        # if shortcuts are indeed ambiguous, use numbers instead, starting at one.
+        if ambiguous_shortcuts:
+            shortcuts_map = {str(i + 1): choice for i, choice in enumerate(choices)}
+    else:
+        shortcuts_map = {choice: choice for choice in choices}
+    # }
+
+    # HANDLING INPUT MESSAGE {
+    choicelist = list()
+    for shortcut, choice in shortcuts_map.items():
+        if not shortcuts:
+            choicelist.append('- {}'.format(choice))
+        elif ambiguous_shortcuts:
+            choicelist.append('{}: {}'.format(shortcut, choice))
+        else:
+            choicelist.append('[{}]{}'.format(shortcut, choice[len(shortcut):]))
+
+    msg = msg.replace('<choices>', '\n'.join(choicelist)) + '\n>'
+    # }
+
+    ans = input(msg).strip().lower()
+    while ans not in [e.lower() for e in shortcuts_map.keys()]:
+        cprint('"{}" is not a valid choice. Please try again'.format(ans), 'red')
+        ans = input('>').strip().lower()
+    return
+
+
+def header(flags: FlagsParser):
+    if flags.title != 'untitled':
+        cprint(flags.header.replace('<>', flags.title), flags.header_color)
 
 
 def main():
-    DATA, FLAGS = parse_file(DATA_FILE)
-    FLAGS = FlagsParser(FLAGS)
-    DATA = handle_flags(DATA, FLAGS)
+    # parse the flags and data from the text file
+    data, flags = parse_file(DATA_FILE)
+    # convert the flags into a FlagsParser object, and clean up flags by:
+    # - adding non-declared flags with their default values
+    # - removing unknown flags
+    flags = FlagsParser(flags)
+    # transform data according to the flags
+    data = handle_flags(data, flags)
+
+    # debug
+    global DEBUG
     print('===FLAGS===')
-    pprint(FLAGS.to_dict())
+    flags.print()
     print('===DATA===')
-    pprint(DATA)
-    if yesno('Test mode ?'):
-        found, notfound = test_loop(DATA, FLAGS)
-        grade = round(len(found) / flags.grade_max, flags.grade_precision)
-        color = 'green' if grade >= flags.grade_max * flags.good_grade else 'red'
-        cprint('Your grade: {}/{} ({}/{})'.format(grade, int(flags.grade_max), len(found), len(DATA)), color)
+    helpers.pprint_dict(data)
+
+    # print header
+    header(flags)
+
+    # print loaded items count
+    if flags.show_items_count:
+        cprint('Loaded {} item{} from {}'.format(len(data), 's' if len(data) != 1 else '', DATA_FILE), 'green')
+
+    # choose testing or training mode
+    training_mode = selection(MESSAGES['choose_mode'], list(MODES_PRETTY.values())) == MODES_PRETTY[
+        'testing'] if not DEBUG else True
+
+    if training_mode:
+        found, notfound = testing_loop(data, flags)
+        show_grade(found, data, flags)
     else:
-        found, notfound = train_loop(DATA, FLAGS)
+        # in training mode, all items are always found
+        notfound = list()
+        train_loop(data, flags)
 
     if len(notfound):
-        cprint("You need to learn about:", 'red')
-        maxlen = max([len(e) for e in DATA.keys()])
-        for asked, answer in DATA.items():
-            sp = ' ' * (3 + (maxlen - len(asked)))
-            print('{}{}:{}'.format(asked, sp, answer))
+        recap(data)
 
 
 if __name__ == '__main__':

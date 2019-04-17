@@ -41,7 +41,7 @@ Available flags:
 |~~or-syntax~~|Same as `and-syntax`, but used to specify a logical "or": *this* **or** *that*|, |\|\||
 |grade-max|Indicate the divisor (maximum grade) used in *testing mode*.|20|100
 |good-grade|Grades greater or equal to this will be shown green, while others will be shown red. The good-grade value is calculated by multiplying it by the max-grade value.|0.75|0.5
-|title|Will be used to display a header at the start of the script. If set to `False`, the header will not be displayed.|Chemistry test|False
+|title|Will be used to display a header at the start of the script. If set to `untitled`, the header will not be displayed.|Chemistry test|untitled
 |grade-precision|Specify the precision used to round the grade value|1|2
 
 NOTE: `True` and `False` values aren't case sensitive, so you can also write `true` and `false`.
