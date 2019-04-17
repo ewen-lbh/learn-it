@@ -6,7 +6,7 @@ from pprint import pprint
 
 DATA_FILE = 'learndata_example.txt'
 SYNTAX = {
-    'flags': r'--([\w\-]+) (\w+)'
+    'flags': r'--([\w\-]+) (.+)'
 }
 # flag-name: default value
 AVAILABLE_FLAGS = {
