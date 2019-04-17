@@ -38,7 +38,7 @@ FLAGS_DEFAULTS = {
     'or-syntax'                  : '||',
     'grade-precision'            : 2,
     'show-answer-in-testing-mode': True,
-    'always-show-grade'          : True,
+    'always-show-grade'          : False,
     'header'                     : '---- <> ----',
     'header-color'               : 'cyan',
     'show-items-count'           : DEBUG
