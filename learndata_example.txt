@@ -8,6 +8,9 @@
 --good-grade 16
 --title Example test
 
+# Note that inline comments are not supported
+# (they must be on separates lines, ie no "value // blah blah blah")
+
 # Here we have 2 answers that are required.
 foo
 bar & quux
