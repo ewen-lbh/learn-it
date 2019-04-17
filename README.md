@@ -15,8 +15,14 @@ The file will be parsed, and the training (or testing, see [modes](#modes)) will
 ### The "learndata" text file format  
 #### Overview  
     --flag-name value  
- # comment // another comment Thing to learn about (the "key") Its correct answer (the "value")  
- Other thing you should know by heart Its correct answer  
+    # comment // another comment Thing to learn about (the "key") 
+    Its correct answer (the "value")  
+    
+    Other thing you should know by heart 
+    Its correct answer  
+    
+    # The empty line is mandatory, it separates each item
+    # See how the files are parsed in Core/main.py's parse() function
   
 #### Flags  
 Flags are used to set options.   
