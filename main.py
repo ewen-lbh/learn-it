@@ -9,7 +9,7 @@ import helpers
 DATA_FILE = 'learndata_example.txt'
 DEBUG = False
 SYNTAX = {
-    'flags'   : re.compile(r'--([\w\-]+)([ =].+)?'),  # [0]: trues, [1]: falses
+    'flags'   : re.compile(r'--([\w\-]+)(?:[ =](.+))?'),  # [0]: trues, [1]: falses
     'booleans': (('true', 'yes', 'on'), ('false', 'no', 'off')),
     'lists'   : re.compile(r'\[([,\w]+)\]'),
     'comments': re.compile(r'(?://)|(?:#) (.+)')
@@ -76,9 +76,9 @@ def parse(lines: list) -> tuple:
             # if ast returns a Syntax or Value error, it means that the value is a string
             # that's because, again, we don't require quoting strings, and pyton's parser doesn't like that
             except ValueError:
-                parsed = str(val)
+                parsed = str(val).strip()
             except SyntaxError:
-                parsed = str(val)
+                parsed = str(val).strip()
 
             return parsed
 
