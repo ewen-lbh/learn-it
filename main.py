@@ -173,10 +173,13 @@ class FlagsParser:
             # from FLAGS_DEFAULTS if not set
             val = flags.get(flag, default)
 
-            # If the flag's value type correspond to the one described in FLAGS_TYPES,
-            # return it. If it doesn't match (eg. we passed a list to the --case-sensitive flag), simpy ignore the flag
-            if type(val) is FLAGS_TYPES[flag]:
-                real_flags[flag] = val
+            # If the flag's value type does not match the one described in FLAGS_TYPES,
+            # (eg. we passed a list to the --case-sensitive flag),
+            # ignore the flag's value and fallback to the default one
+            if type(val) is not FLAGS_TYPES[flag]:
+                val = default
+
+            real_flags[flag] = val
 
 
         # set attribues programmatically, changing dashes to undescores
