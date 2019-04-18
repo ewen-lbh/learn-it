@@ -11,3 +11,14 @@ def pprint_dict(data: dict, pad: int = 1, sep: str = ': ', column_names: tuple =
         spaces = ' ' * (k_maxlen - len(k) + pad)
         print(k, spaces, sep, v, sep='')
 
+
+def strip_list(iterable: list) -> list:
+    def _partial_strip(iterable:list) -> list:
+        while iterable and not iterable[-1]:
+            iterable.pop()
+        return iterable
+
+    iterable = _partial_strip(iterable)
+    iterable = list(reversed(_partial_strip(list(reversed(iterable)))))
+
+    return iterable

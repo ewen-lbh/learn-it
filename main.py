@@ -50,6 +50,7 @@ FLAGS_DEFAULTS = {
 
 # automaticaly get flag types from defaults
 # warning: this will only work for flags that accept a SINGLE type
+# todo specify allowed value(s) / type(s) instead
 FLAGS_TYPES = {flag: type(default) for flag, default in FLAGS_DEFAULTS.items()}
 
 AUTO_ANSWER = False
@@ -117,6 +118,8 @@ def parse(lines: list) -> tuple:
             line = line.rstrip('\n')
             if not SYNTAX['comments'].match(line):
                 ret.append(line)
+
+        ret = helpers.strip_list(ret)
         return ret
 
     def parse_data(lines: list):
