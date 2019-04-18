@@ -27,7 +27,7 @@ FLAGS_DEFAULTS = {
     # 'and-syntax'                 : '&&',
     # 'or-syntax'                  : '||',
     # 'no-colors'                  : False,
-    # 'warn-unknown-flags'         : True
+    # 'warn-unknown-flags'         : True,
     'always-show-grade'          : False,
     'ask-for'                    : 'values',
     'ask-for-typos'              : False,
@@ -80,12 +80,7 @@ def parse(lines: list) -> tuple:
             except SyntaxError:
                 parsed = str(val)
 
-            # finally, if the parsed value's type correspond to the one described in FLAGS_TYPES,
-            # return it. If it doesn't match (eg. we passed a list to the --case-sensitive flag), return None.
-            if type(parsed) is FLAGS_TYPES[flag]:
-                return parsed
-            else:
-                return None
+            return parsed
 
         flags = dict()
         other_lines = list()
@@ -176,7 +171,13 @@ class FlagsParser:
         for flag, default in FLAGS_DEFAULTS.items():
             # set the value to the corresponding one in the dict, or get its default value
             # from FLAGS_DEFAULTS if not set
-            real_flags[flag] = flags.get(flag, default)
+            val = flags.get(flag, default)
+
+            # If the flag's value type correspond to the one described in FLAGS_TYPES,
+            # return it. If it doesn't match (eg. we passed a list to the --case-sensitive flag), simpy ignore the flag
+            if type(val) is FLAGS_TYPES[flag]:
+                real_flags[flag] = val
+
 
         # set attribues programmatically, changing dashes to undescores
         # for the attributes names
