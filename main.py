@@ -375,10 +375,8 @@ def main(learndata_file=DATA_FILE):
     # debug
     header(flags, custom_text='Debug info')
     if flags.debug:
-        print('===FLAGS===')
         flags.print()
-        print('===DATA===')
-        helpers.pprint_dict(data)
+        helpers.pprint_dict(data, sep='', column_names=('KEYS','VALUES'))
 
     # print header
     header(flags)
