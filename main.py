@@ -4,7 +4,7 @@ import random
 import collections
 import re
 from termcolor import cprint
-from Core import helpers
+import helpers
 
 DATA_FILE = 'learndata_example.txt'
 DEBUG = False
