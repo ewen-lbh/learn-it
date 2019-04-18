@@ -1,12 +1,14 @@
 import ast
 import itertools
+import os
 import random
 import collections
 import re
 from termcolor import cprint
 import helpers
 
-DATA_FILE = 'learndata_example.txt'
+LEARNDATA_ROOT = '~/Documents/work/learndata'
+DATA_FILE = 'maths/suites.txt'
 DEBUG = False
 SYNTAX = {
     'flags'   : re.compile(r'--([\w\-]+)(?:[ =](.+))?'),  # [0]: trues, [1]: falses
@@ -34,6 +36,7 @@ FLAGS_DEFAULTS = {
     'ask-order'                  : 'random',
     'ask-sentence'               : '<>',
     'case-sensitive'             : False,
+    'debug'                      : DEBUG,
     'good-grade'                 : 0.5,
     'grade-max'                  : 100,
     'grade-precision'            : 2,
@@ -50,6 +53,8 @@ FLAGS_DEFAULTS = {
 FLAGS_TYPES = {flag: type(default) for flag, default in FLAGS_DEFAULTS.items()}
 
 AUTO_ANSWER = False
+LEARNDATA_ROOT = os.path.normpath(os.path.expanduser(LEARNDATA_ROOT))
+DATA_FILE = os.path.abspath(os.path.join(LEARNDATA_ROOT, DATA_FILE))
 
 
 def parse(lines: list) -> tuple:
@@ -181,7 +186,6 @@ class FlagsParser:
 
             real_flags[flag] = val
 
-
         # set attribues programmatically, changing dashes to undescores
         # for the attributes names
         for flag, val in real_flags.items():
@@ -194,7 +198,7 @@ class FlagsParser:
         return ret
 
     def print(self):
-        helpers.pprint_dict(self.to_dict())
+        helpers.pprint_dict(self.to_dict(), sep='', column_names=('FLAG NAMES', 'VALUES'))
 
 
 def handle_flags(data: collections.OrderedDict, flags: FlagsParser) -> tuple:
@@ -352,14 +356,15 @@ def selection(msg: str, choices: list, shortcuts=True, shortcuts_level: int = 1)
     return
 
 
-def header(flags: FlagsParser):
-    if flags.title != 'untitled':
-        cprint(flags.header.replace('<>', flags.title), flags.header_color)
+def header(flags: FlagsParser, custom_text: str = None):
+    if flags.title != 'untitled' or custom_text:
+        text = custom_text or flags.title
+        cprint(flags.header.replace('<>', text), flags.header_color)
 
 
-def main():
+def main(learndata_file=DATA_FILE):
     # parse the flags and data from the text file
-    data, flags = parse_file(DATA_FILE)
+    data, flags = parse_file(learndata_file)
     # convert the flags into a FlagsParser object, and clean up flags by:
     # - adding non-declared flags with their default values
     # - removing unknown flags
@@ -368,8 +373,8 @@ def main():
     data = handle_flags(data, flags)
 
     # debug
-    global DEBUG
-    if DEBUG:
+    header(flags, custom_text='Debug info')
+    if flags.debug:
         print('===FLAGS===')
         flags.print()
         print('===DATA===')
@@ -384,7 +389,7 @@ def main():
 
     # choose testing or training mode
     training_mode = selection(MESSAGES['choose_mode'], list(MODES_PRETTY.values())) == MODES_PRETTY[
-        'testing'] if not DEBUG else True
+        'testing'] if not flags.debug else True
 
     if training_mode:
         found, notfound = testing_loop(data, flags)
