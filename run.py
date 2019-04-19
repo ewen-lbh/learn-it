@@ -11,5 +11,5 @@ except ModuleNotFoundError:
     requirements_path = os.path.abspath(os.path.join(os.getcwd(), 'requirements.txt'))
     subprocess.call(['pip3', 'install', '-r', requirements_path])
 
-from main import main
+from src.main import main
 main()

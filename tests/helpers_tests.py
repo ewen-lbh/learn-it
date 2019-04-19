@@ -1,4 +1,4 @@
-from helpers import *
+from src.helpers import *
 
 def test_strip_list_normal():
     return strip_list(['', None, '', 'hello','', 'world', '', False, '']) == ['hello', '' ,'world']
