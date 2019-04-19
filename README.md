@@ -44,6 +44,7 @@ Available flags:
 |grade-precision|Specify the precision used to round the grade value|1|2  
 |header-color|The header's color. Avaible colors: grey, red, green, yellow, blue, magenta, cyan, white|red|cyan  
 |header|Text shown at the beginning of the script. `<>` is replaced with `--title`'s value|<>|\-\-\- <> \-\-\-|  
+|preset|Use a [flags preset](#presets).|languages||
 |show-answer-in-testing-mode|In testing mode, show the correct answer when the provided answer was wrong. (This behavior is always active in training mode)|True, False|True  
 |show-items-count|Shows a message at the start that says: "Loaded *N* items from *FILE*"|True, False|True  
 |title|Will be used to display a header at the start of the script. If set to `untitled`, the header will not be displayed.|Chemistry test|untitled    
@@ -66,12 +67,44 @@ Context: a french vocabulary test with synonyms
   
  Bus Bus || Car    Hello  
  Bonjour && Salut  
+
 Note the spaces around the operators: you could remove those, but since individuals items are *stripped* (spaces preceding and following words are removed),  additional spaces don't affect words  
   
 ##### Escaping the operators symbols  
 You would think that putting `\&&` would consider the first ampersand as a literal ampersand, and would therefore not consider this as a special symbol. This feature is on the roadmap, but does not work for now. That's the main reason why`--<operator>-syntax` flags exist.  
      
+#### Presets
+A `presets.json` file contains a single preset named *languages*. Obviously, you can add more presets.
+The file in itself is an object that contains presets, using their names as the property (the key), and the value being another object, that associates flags with their values :
+
+    {
+		"preset_name": {
+			"flag":"value",
+			"other_flag":"other_value"
+			...
+		},
+		"other_preset_name":{
+			...
+		}
+	}
+
+Adding the leading double dash in the flag names is optional.
+##### Overriding
+If you specify a preset that declares a flag, and that you also specify a value for that flag, the value defined in the learndata file will override the preset's.
+*Example*
+		
+
+    presets.json:
+	"thingy":{"whitelist":"[stuff, things]"}
+
+	learndata.txt:
+	--whitelist [spam, eggs]
+	--preset thingy
+
+In this example, `--whitelist` will take the value `[spam, eggs]`, even if the `--preset` is declared 
+after `--whitelist`.
   
+
 #### File example  
 Take a look at `learndata/russian.txt` to get an idea of what a learndata text file looks like, and how the flags are used and defined.  
   

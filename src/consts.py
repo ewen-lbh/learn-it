@@ -3,6 +3,7 @@ import re
 
 LEARNDATA_ROOT = '~/Documents/work/learndata'
 DATA_FILE = 'maths/suites.txt'
+PRESETS_FILE = 'presets.json'
 DEBUG = False
 SYNTAX = {
     'flags'   : re.compile(r'--([\w\-]+)(?:[ =](.+))?'),  # [0]: trues, [1]: falses
@@ -48,5 +49,8 @@ FLAGS_DEFAULTS = {
 FLAGS_TYPES = {flag: type(default) for flag, default in FLAGS_DEFAULTS.items()}
 
 AUTO_ANSWER = False
+
+# Get real and absolute paths for DATA_FILE and PRESETS_FILE
 LEARNDATA_ROOT = os.path.normpath(os.path.expanduser(LEARNDATA_ROOT))
 DATA_FILE = os.path.abspath(os.path.join(LEARNDATA_ROOT, DATA_FILE))
+PRESETS_FILE = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), PRESETS_FILE))

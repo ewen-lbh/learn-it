@@ -1,111 +1,154 @@
 import ast
 import itertools
 import collections
+import json
 import random
 
 from src import helpers
 from src.consts import *
+import logging as log
 
+
+def parse_preset(lines) -> dict:
+    preset = None
+    for line in lines:
+        if SYNTAX['flags'].match(line):
+            if SYNTAX['flags'].search(line).group(1) == 'preset':
+                preset = SYNTAX['flags'].search(line).group(2)
+
+    if not os.path.isfile(PRESETS_FILE):
+        log.error('Presets file not found, ignoring preset')
+        return {}
+
+    if preset is None:
+        return {}
+
+    # get the presets file contents
+    presets_file_contents = open(PRESETS_FILE, 'r', encoding='utf8').read()
+    # get the flags and their values for the chosen preset
+    # if the specified preset doesn't exists, throw an error in the log
+    try:
+        flags = json.loads(presets_file_contents)[preset]
+    except KeyError:
+        log.error(f'Unknown preset "{preset}", ignoring')
+        return {}
+
+    # removes leading dashes
+    flags = {k.lstrip('-'): v for k, v in flags.items()}
+    return flags
+
+
+def parse_flags(lines, flags:dict=None) -> tuple:
+    def parse_flag_type(val):
+        # handle booleans, see if the lowercase flag value is in ANY of the booleans syntax
+        # (that's why we flatten the nested tuples with itertools.chain's from_iterable)
+        if val.lower() in list(itertools.chain.from_iterable(SYNTAX['booleans'])):
+            # the first child tuple contains trues
+            return val.lower() in SYNTAX['booleans'][0]
+
+        # handle lists. Those aren't handled by ast.literal_eval because the syntax used doesn't require
+        # quotes around values, considering it as a list of string anyway
+        if SYNTAX['lists'].match(val):
+            # get only values
+            vals = SYNTAX['lists'].search(val).group(1)
+            # split by ",", and strip values to remove potential whitespace
+            # (eg if the user noted the list with ", " as the separator)
+            return [e.strip() for e in vals.split(',')]
+
+        # handle everything else (floats, ints)
+        try:
+            parsed = ast.literal_eval(val)
+        # if ast returns a Syntax or Value error, it means that the value is a string
+        # that's because, again, we don't require quoting strings, and pyton's parser doesn't like that
+        except ValueError:
+            parsed = str(val).strip()
+        except SyntaxError:
+            parsed = str(val).strip()
+
+        return parsed
+
+    if flags is None:
+        flags = dict()
+
+    other_lines = list()
+    for line in lines:
+        if SYNTAX['flags'].match(line):
+            flag = SYNTAX['flags'].search(line).group(1)
+            val = SYNTAX['flags'].search(line).group(2)
+
+            # ignore the "preset" flag, it should be handled by parse_preset by now
+            if flag == 'preset':
+                continue
+
+            # we do this because an unmatched regex group (the value one in this case)
+            # assigns a value of None to it. If we specify a flag alone,
+            # we want to set it to true (kinda like bash's flags)
+            if val is None:
+                val = True
+            else:
+                # automatic types
+                val = parse_flag_type(val)
+            # if there wasn't any errors while parsing and converting the
+            # value to its correct type:
+            if val is not None:
+                flags[flag] = val
+        else:
+            other_lines.append(line)
+    return flags, other_lines
+
+
+def cleanup(lines: list):
+    # removes comments, ending \n in lines list
+    # and strips the list, removing all empty lines before and after data
+    ret = list()
+    for line in lines:
+        line = line.rstrip('\n')
+        if not SYNTAX['comments'].match(line):
+            ret.append(line)
+
+    ret = helpers.strip_list(ret)
+    return ret
+
+
+def parse_data(lines: list):
+    # reminder: the syntax used is :
+    # key
+    # value
+    # <empty line>
+
+    data = dict()
+    for i, line in enumerate(lines):
+        # get the previous/next line, or set it to an empty one
+        # if this is the first/last line
+        if i > 0:
+            prevline = lines[i - 1]
+        else:
+            prevline = ''
+        try:
+            nextline = lines[i + 1]
+        except IndexError:
+            nextline = ''
+
+        # if the previous line is empty (ie if the previous line is a separator)
+        # we add a new item, with:
+        # key - the current line
+        # value - the next line
+        if not prevline:
+            data[line] = nextline
+        # if we are in the middle of a item (ie on the value line) or on a separator, skip the line
+        else:
+            continue
+    return data
 
 def parse(lines: list) -> tuple:
-    
-    def parse_flags(lines):
-        def parse_flag_type(val):
-            # handle booleans, see if the lowercase flag value is in ANY of the booleans syntax
-            # (that's why we flatten the nested tuples with itertools.chain's from_iterable)
-            if val.lower() in list(itertools.chain.from_iterable(SYNTAX['booleans'])):
-                # the first child tuple contains trues
-                return val.lower() in SYNTAX['booleans'][0]
-
-            # handle lists. Those aren't handled by ast.literal_eval because the syntax used doesn't require
-            # quotes around values, considering it as a list of string anyway
-            if SYNTAX['lists'].match(val):
-                # get only values
-                vals = SYNTAX['lists'].search(val).group(1)
-                # split by ",", and strip values to remove potential whitespace
-                # (eg if the user noted the list with ", " as the separator)
-                return [e.strip() for e in vals.split(',')]
-
-            # handle everything else (floats, ints)
-            try:
-                parsed = ast.literal_eval(val)
-            # if ast returns a Syntax or Value error, it means that the value is a string
-            # that's because, again, we don't require quoting strings, and pyton's parser doesn't like that
-            except ValueError:
-                parsed = str(val).strip()
-            except SyntaxError:
-                parsed = str(val).strip()
-
-            return parsed
-
-        flags = dict()
-        other_lines = list()
-        for line in lines:
-            if SYNTAX['flags'].match(line):
-                flag = SYNTAX['flags'].search(line).group(1)
-                val = SYNTAX['flags'].search(line).group(2)
-                # we do this because an unmatched regex group (the value one in this case)
-                # assigns a value of None to it. If we specify a flag alone,
-                # we want to set it to true (kinda like bash's flags)
-                if val is None:
-                    val = True
-                else:
-                    # automatic types
-                    val = parse_flag_type(val)
-                # if there wasn't any errors while parsing and converting the
-                # value to its correct type:
-                if val is not None:
-                    flags[flag] = val
-            else:
-                other_lines.append(line)
-        return flags, other_lines
-
-    def cleanup(lines: list):
-        # removes comments, ending \n in lines list
-        # and strips the list, removing all empty lines before and after data
-        ret = list()
-        for line in lines:
-            line = line.rstrip('\n')
-            if not SYNTAX['comments'].match(line):
-                ret.append(line)
-
-        ret = helpers.strip_list(ret)
-        return ret
-
-    def parse_data(lines: list):
-        # reminder: the syntax used is :
-        # key
-        # value
-        # <empty line>
-
-        data = dict()
-        for i, line in enumerate(lines):
-            # get the previous/next line, or set it to an empty one
-            # if this is the first/last line
-            if i > 0:
-                prevline = lines[i - 1]
-            else:
-                prevline = ''
-            try:
-                nextline = lines[i + 1]
-            except IndexError:
-                nextline = ''
-
-            # if the previous line is empty (ie if the previous line is a separator)
-            # we add a new item, with:
-            # key - the current line
-            # value - the next line
-            if not prevline:
-                data[line] = nextline
-            # if we are in the middle of a item (ie on the value line) or on a separator, skip the line
-            else:
-                continue
-        return data
-
+    # First get flag values from the preset. If an error occured while getting flag values (or no preset was specified),
+    # an empty dict is returned. The flags dict gets overriden by parse_flags, so this doesn't need further handling.
+    flags = parse_preset(lines)
     # parse flags first, and get a new "lines" list, without flags declarations in it.
     # we do this because we don't need to clean anything before, as the flags parser uses
     # a strict syntax (the line must match the SYNTAX['flags'] regex pattern)
-    flags, lines = parse_flags(lines)
+    # we pass the flags dict because we want to keep flag values set by the preset that aren't overriden.
+    flags, lines = parse_flags(lines, flags)
     # clean up the lines, removing:
     # - empty lines at the beginning and the end
     # - ending "\n" at each line
