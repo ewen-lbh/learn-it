@@ -6,7 +6,7 @@ DATA_FILE = 'maths/suites.txt'
 PRESETS_FILE = 'presets.json'
 DEBUG = False
 SYNTAX = {
-    'flags'   : re.compile(r'--([\w\-]+)(?:[ =](.+))?'),  # [0]: trues, [1]: falses
+    'flags'   : re.compile(r'--([\w][\w\-]*)(?:[ =](.+))?'),  # [0]: trues, [1]: falses
     'booleans': (('true', 'yes', 'on'), ('false', 'no', 'off')),
     'lists'   : re.compile(r'\[([,\w]+)\]'),
     'comments': re.compile(r'(?://)|(?:#) (.+)')
