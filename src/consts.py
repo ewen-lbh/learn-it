@@ -3,8 +3,12 @@ import re
 
 LEARNDATA_ROOT = '~/Documents/work/learndata'
 DATA_FILE = 'maths/suites.txt'
+LOG_LEVEL = 'WARNING'
+
 PRESETS_FILE = 'presets.json'
 DEBUG = False
+AUTO_ANSWER = False
+
 SYNTAX = {
     'flags'   : re.compile(r'--([\w][\w\-]*)(?:[ =](.+))?'),  # [0]: trues, [1]: falses
     'booleans': (('true', 'yes', 'on'), ('false', 'no', 'off')),
@@ -36,7 +40,6 @@ FLAGS_DEFAULTS = {
     'grade-precision'            : 2,
     'header'                     : '---- <> ----',
     'header-color'               : 'cyan',
-    'log-level'                  : 'warning',
     'show-answer-in-testing-mode': True,
     'show-items-count'           : DEBUG,
     'title'                      : 'untitled',
@@ -49,8 +52,6 @@ FLAGS_DEFAULTS = {
 # todo specify allowed value(s) / type(s) instead
 FLAGS_TYPES = {flag: type(default) for flag, default in FLAGS_DEFAULTS.items()}
 
-AUTO_ANSWER = False
-
 # Get real and absolute paths for DATA_FILE and PRESETS_FILE
 LEARNDATA_ROOT = os.path.normpath(os.path.expanduser(LEARNDATA_ROOT))
 DATA_FILE = os.path.abspath(os.path.join(LEARNDATA_ROOT, DATA_FILE))
@@ -58,3 +59,11 @@ PRESETS_FILE = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__f
 
 # available logging levels
 LOGGING_LEVELS = ["FATAL", "ERROR", "WARNING", "INFO", "DEBUG"]
+# termcolor attributes, comma-separated (with a space after the comma)
+LOGGING_LEVELS_FORMATTING = {
+    "FATAL": "white, on_red",
+    "ERROR": "red",
+    "WARNING": "yellow",
+    "INFO": "white",
+    "DEBUG": "grey"
+}

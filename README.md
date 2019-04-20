@@ -39,13 +39,12 @@ Available flags:
 |ask-order|Order according to which the items are asked about. Doesn't affect *training mode*|keep, alphabetical, random|keep    
 |ask-sentence|Use this to change the sentence used to ask about an item. `<>` is replaced with the item asked about|How do you say <> in russian ?|<>    
 |case-sensitive|Take case into account when comparing answers|True, False|False
-|debug|Sets the debug mode. With this mode, the logging level is set to `DEBUG`, and parsed data is shown at the beginning.|True, False|False    
+|debug|Sets the debug mode. |True, False|False    
 |good-grade|Grades greater or equal to this will be shown green, while others will be shown red. The good-grade value is calculated by multiplying it by the max-grade value.|0.75|0.5    
 |grade-max|Indicate the divisor (maximum grade) used in *testing mode*.|20|100    
 |grade-precision|Specify the precision used to round the grade value|1|2  
 |header-color|The header's color. Avaible colors: grey, red, green, yellow, blue, magenta, cyan, white|red|cyan  
-|header|Text shown at the beginning of the script. `<>` is replaced with `--title`'s value|<>|\-\-\- <> \-\-\-|
-|log-level|Sets the logging level used. Setting `--debug` to True overrides this and sets the logging level to `DEBUG`|fatal, error, warning, info, debug|warning|  
+|header|Text shown at the beginning of the script. `<>` is replaced with `--title`'s value|<>|\-\-\- <> \-\-\-|  
 |preset|Use a [flags preset](#presets).|languages||
 |show-answer-in-testing-mode|In testing mode, show the correct answer when the provided answer was wrong. (This behavior is always active in training mode)|True, False|True  
 |show-items-count|Shows a message at the start that says: "Loaded *N* items from *FILE*"|True, False|True  
@@ -103,7 +102,7 @@ If you specify a preset that declares a flag, and that you also specify a value 
 	--whitelist [spam, eggs]
 	--preset thingy
 
-In this example, `--whitelist` will take the value `[spam, eggs]`, even if the `--preset` is declared 
+In this example, `--whitelist` will take the value `[spam, eggs]`, even if `--preset` is declared 
 after `--whitelist`.
   
 
@@ -117,3 +116,6 @@ In this mode, the script cycles through the items (key-value pairs) and ask you 
 ### Test mode  
 In this mode, the script will ask you for each item *once* (except if you have the [`--ask-for-typos`](#flags) flag set to `True`).  
 At the end, it will tell you your grade and the list of items you did not find.
+
+## Logging levels
+You can change the logging level with  `LOG_LEVEL` (in src/consts.py)

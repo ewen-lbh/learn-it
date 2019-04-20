@@ -1,7 +1,7 @@
 import logging
 import random
 import collections
-from termcolor import cprint
+from termcolor import cprint, colored
 from src import ask, parser, helpers
 from src.consts import *
 
@@ -85,33 +85,49 @@ def header(flags: parser.FlagsParser, custom_text: str = None):
         cprint(flags.header.replace('<>', text), flags.header_color)
 
 
-def get_logging_level(flags:parser.FlagsParser) -> logging.level:
-    level = LOGGING_LEVELS.get(flags.log_level.upper(), "WARNING")
-    if flags.debug:
-        level = "DEBUG"
+def get_logging_props(level:str) -> tuple:
+    level = level.upper() if level in LOGGING_LEVELS else "WARNING"
+    termcolor_attrs = LOGGING_LEVELS_FORMATTING[level].split(', ')
 
-    return getattr(logging, level)
+    return getattr(logging, level), colored('%(levelname)s: %(message)s', *termcolor_attrs)
 
 
 def main(learndata_file=DATA_FILE) -> int:
     try:
+        # ---logging config---
+        # we need to get level and debug flags before anything else because
+        # flag parsing can output logs, and we need to decide whether we want
+        # to show those. So we *have* to get the desired log level and debug mode (because debug
+        # mode affects the selected log level) *before* parsing anything else.
+        # This is far from elegant.
+        # This is also a problem because setting --log-level or --debug via a --preset is not possible,
+        # since the preset is parsed *after* this.
+        #
+        # POSSIBLE SOLUTIONS
+        # (1) remove --log-level, only set it via a const in consts.py
+        # (2) change logging basicConfig after flags parsing
+        # (3) change logging basicConfig as soon as the --log-level flag is parsed
+        # (4) A mix of #1 and #2, set the basicConfig according to a const,
+        #     and change it after flags parsing
+        #
+        # currently, the solution 1 has been applied
+        logging_level, logging_format = get_logging_props(LOG_LEVEL)
+        logging.basicConfig(level=logging_level, format=logging_format)
+
         # parse the flags and data from the text file
         data, flags = parser.parse_file(learndata_file)
         # convert the flags into a parser.FlagsParser object, and clean up flags by:
         # - adding non-declared flags with their default values
         # - removing unknown flags
         flags = parser.FlagsParser(flags)
-        # transform data according to the flags
-        data = parser.handle_flags(data, flags)
+        # transform learndata according to the flags
+        data = parser.transform_learndata(data, flags)
 
         # debug
         if flags.debug:
             header(flags, custom_text='Debug info')
             print(flags)
             helpers.pprint_dict(data, sep='', column_names=('KEYS', 'VALUES'))
-
-        # logging module's level
-        logging.basicConfig(level=get_logging_level(flags))
 
         # print header
         header(flags)

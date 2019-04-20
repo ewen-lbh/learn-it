@@ -37,35 +37,35 @@ def parse_preset(lines) -> dict:
     flags = {k.lstrip('-'): v for k, v in flags.items()}
     return flags
 
+def parse_flag_type(val):
+    # handle booleans, see if the lowercase flag value is in ANY of the booleans syntax
+    # (that's why we flatten the nested tuples with itertools.chain's from_iterable)
+    if val.lower() in list(itertools.chain.from_iterable(SYNTAX['booleans'])):
+        # the first child tuple contains trues
+        return val.lower() in SYNTAX['booleans'][0]
+
+    # handle lists. Those aren't handled by ast.literal_eval because the syntax used doesn't require
+    # quotes around values, considering it as a list of string anyway
+    if SYNTAX['lists'].match(val):
+        # get only values
+        vals = SYNTAX['lists'].search(val).group(1)
+        # split by ",", and strip values to remove potential whitespace
+        # (eg if the user noted the list with ", " as the separator)
+        return [e.strip() for e in vals.split(',')]
+
+    # handle everything else (floats, ints)
+    try:
+        parsed = ast.literal_eval(val)
+    # if ast returns a Syntax or Value error, it means that the value is a string
+    # that's because, again, we don't require quoting strings, and pyton's parser doesn't like that
+    except ValueError:
+        parsed = str(val).strip()
+    except SyntaxError:
+        parsed = str(val).strip()
+
+    return parsed
 
 def parse_flags(lines, flags:dict=None) -> tuple:
-    def parse_flag_type(val):
-        # handle booleans, see if the lowercase flag value is in ANY of the booleans syntax
-        # (that's why we flatten the nested tuples with itertools.chain's from_iterable)
-        if val.lower() in list(itertools.chain.from_iterable(SYNTAX['booleans'])):
-            # the first child tuple contains trues
-            return val.lower() in SYNTAX['booleans'][0]
-
-        # handle lists. Those aren't handled by ast.literal_eval because the syntax used doesn't require
-        # quotes around values, considering it as a list of string anyway
-        if SYNTAX['lists'].match(val):
-            # get only values
-            vals = SYNTAX['lists'].search(val).group(1)
-            # split by ",", and strip values to remove potential whitespace
-            # (eg if the user noted the list with ", " as the separator)
-            return [e.strip() for e in vals.split(',')]
-
-        # handle everything else (floats, ints)
-        try:
-            parsed = ast.literal_eval(val)
-        # if ast returns a Syntax or Value error, it means that the value is a string
-        # that's because, again, we don't require quoting strings, and pyton's parser doesn't like that
-        except ValueError:
-            parsed = str(val).strip()
-        except SyntaxError:
-            parsed = str(val).strip()
-
-        return parsed
 
     if flags is None:
         flags = dict()
@@ -202,7 +202,7 @@ class FlagsParser:
         return helpers.pprint_dict(self.to_dict(), sep='', column_names=('FLAG NAMES', 'VALUES'), return_str=True)
 
 
-def handle_flags(data: collections.OrderedDict, flags: FlagsParser) -> collections.OrderedDict:
+def transform_learndata(data: collections.OrderedDict, flags: FlagsParser) -> collections.OrderedDict:
     # --whitelist
     if len(flags.whitelist):
         data = {k: v for k, v in data.items() if k in flags.whitelist}
