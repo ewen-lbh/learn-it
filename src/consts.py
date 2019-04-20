@@ -61,9 +61,5 @@ PRESETS_FILE = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__f
 LOGGING_LEVELS = ["FATAL", "ERROR", "WARNING", "INFO", "DEBUG"]
 # termcolor attributes, comma-separated (with a space after the comma)
 LOGGING_LEVELS_FORMATTING = {
-    "FATAL": "white, on_red",
-    "ERROR": "red",
-    "WARNING": "yellow",
-    "INFO": "white",
-    "DEBUG": "grey"
+    "FATAL": "white, on_red", "ERROR": "red", "WARNING": "yellow", "INFO": "white", "DEBUG": "grey"
 }

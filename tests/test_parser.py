@@ -1,12 +1,12 @@
 import os
-
-import src.parser
-import src.helpers
 import unittest
+
+import src.helpers
+import src.parser
 
 
 def learndata_path(file) -> str:
-    return os.path.join(os.path.dirname(os.path.dirname(__file__)), 'tests','learndata', file)
+    return os.path.join(os.path.dirname(os.path.dirname(__file__)), 'tests', 'learndata', file)
 
 
 def learndata(file) -> list:

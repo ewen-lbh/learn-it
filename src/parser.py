@@ -1,12 +1,12 @@
 import ast
-import itertools
 import collections
+import itertools
 import json
+import logging as log
 import random
 
 from src import helpers
 from src.consts import *
-import logging as log
 
 
 def parse_preset(lines) -> dict:
@@ -37,6 +37,7 @@ def parse_preset(lines) -> dict:
     flags = {k.lstrip('-'): v for k, v in flags.items()}
     return flags
 
+
 def parse_flag_type(val):
     # handle booleans, see if the lowercase flag value is in ANY of the booleans syntax
     # (that's why we flatten the nested tuples with itertools.chain's from_iterable)
@@ -65,8 +66,8 @@ def parse_flag_type(val):
 
     return parsed
 
-def parse_flags(lines, flags:dict=None) -> tuple:
 
+def parse_flags(lines, flags: dict = None) -> tuple:
     if flags is None:
         flags = dict()
 
@@ -140,6 +141,7 @@ def parse_data(lines: list):
             continue
     return data
 
+
 def parse(lines: list) -> tuple:
     # First get flag values from the preset. If an error occured while getting flag values (or no preset was specified),
     # an empty dict is returned. The flags dict gets overriden by parse_flags, so this doesn't need further handling.
@@ -183,7 +185,7 @@ class FlagsParser:
             real_flags[flag] = val
 
         # Get the name of flags that were parsed but that aren't in FLAGS_DEFAULTS (aka unknown flags)
-        for flag in [k for k,v in {k:v for k, v in flags.items() if k not in FLAGS_DEFAULTS.keys()}.items()]:
+        for flag in [k for k, v in {k: v for k, v in flags.items() if k not in FLAGS_DEFAULTS.keys()}.items()]:
             # Print a warning message if warn-unknown-flags is on.
             if real_flags['warn-unknown-flags']: log.warning(f'Unknown flag "{flag}", ignoring')
 

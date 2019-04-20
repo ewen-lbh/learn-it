@@ -1,7 +1,9 @@
+import collections
 import logging
 import random
-import collections
+
 from termcolor import cprint, colored
+
 from src import ask, parser, helpers
 from src.consts import *
 
@@ -85,7 +87,7 @@ def header(flags: parser.FlagsParser, custom_text: str = None):
         cprint(flags.header.replace('<>', text), flags.header_color)
 
 
-def get_logging_props(level:str) -> tuple:
+def get_logging_props(level: str) -> tuple:
     level = level.upper() if level in LOGGING_LEVELS else "WARNING"
     termcolor_attrs = LOGGING_LEVELS_FORMATTING[level].split(', ')
 

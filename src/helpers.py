@@ -1,5 +1,4 @@
-def pprint_dict(data: dict, pad: int = 1, sep: str = ': ', column_names: tuple = None,
-                return_str: bool = False):
+def pprint_dict(data: dict, pad: int = 1, sep: str = ': ', column_names: tuple = None, return_str: bool = False):
     k_maxlen = max([len(str(e)) for e in data.keys()])
     v_maxlen = max([len(str(e)) for e in data.values()])
     ret = list()

@@ -1,6 +1,5 @@
-import sys
 import subprocess
-import webbrowser
+import sys
 
 try:
     import termcolor
