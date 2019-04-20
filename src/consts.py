@@ -1,7 +1,11 @@
 import os
 import re
 
-LEARNDATA_ROOT = '~/Documents/work/learndata'
+if os.name == 'nt':
+    LEARNDATA_ROOT = 'D:\\Users\\ewenl\\Documents\\work\\learndata'
+else:
+    LEARNDATA_ROOT = '~/Documents/work/learndata'
+
 DATA_FILE = 'maths/suites.txt'
 LOG_LEVEL = 'WARNING'
 
