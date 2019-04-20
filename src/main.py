@@ -86,7 +86,7 @@ def header(flags: parser.FlagsParser, custom_text: str = None):
         # prints the header with the appropriate color and style
         cprint(flags.header.replace('<>', text), flags.header_color)
 
-
+# todo fix the color, its based on LOGGING_LEVEL, it should be based on %(levelname)s .
 def get_logging_props(level: str) -> tuple:
     level = level.upper() if level in LOGGING_LEVELS else "WARNING"
     termcolor_attrs = LOGGING_LEVELS_FORMATTING[level].split(', ')
