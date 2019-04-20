@@ -6,7 +6,7 @@ import unittest
 
 
 def learndata_path(file) -> str:
-    return os.path.join(os.path.dirname(os.path.dirname(__file__)), 'learndata', file)
+    return os.path.join(os.path.dirname(os.path.dirname(__file__)), 'tests','learndata', file)
 
 
 def learndata(file) -> list:
@@ -17,8 +17,8 @@ def learndata(file) -> list:
 
 
 class FlagsPresets(unittest.TestCase):
-    def test_override(self):
-        lines = learndata('test_presets')
+    def test_preset(self):
+        lines = learndata('test_presets.txt')
         self.assertEqual(src.parser.parse_preset(lines), {
             "ask-order": "random", "ask-for": "both", "show-items-count": "yes", "ask-sentence": "How do you say <> ?"
         })
@@ -36,11 +36,11 @@ class Flags(unittest.TestCase):
         })
 
     def test_with_preset(self):
-        lines = learndata('test_presets')
+        lines = learndata('test_presets.txt')
         parsed = src.parser.parse_preset(lines)
         parsed, _ = src.parser.parse_flags(lines=lines, flags=parsed)
         self.assertEqual(parsed, {
-            "ask-order": "random", "ask-for": "both", "show-items-count": "yes", "ask-sentence": "OwO <> UwU"
+            "ask-order": "random", "ask-for": "both", "show-items-count": "yes", "ask-sentence": "UwU <> OwO"
         })
 
 

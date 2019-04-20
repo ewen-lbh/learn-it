@@ -60,7 +60,5 @@ docs/_build/
 # PyBuilder
 target/
 
-learndata/
-
 #PyCharm
 .idea/
