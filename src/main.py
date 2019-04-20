@@ -149,14 +149,17 @@ def main(sys_argv) -> int:
         if flags.debug:
             header(flags, custom_text='Debug info')
             print(flags)
+            print('')
             helpers.pprint_dict(data, sep='', column_names=('KEYS', 'VALUES'))
+            print('')
 
         # print header
         header(flags)
 
         # print loaded items count
         if flags.show_items_count:
-            cprint('Loaded {} item{} from {}'.format(len(data), 's' if len(data) != 1 else '', DATA_FILE), 'green')
+            display_path = learndata_file.replace(LEARNDATA_ROOT, '').lstrip('\\').lstrip('/')
+            cprint('Loaded {} item{} from {}'.format(len(data), 's' if len(data) != 1 else '', display_path), 'green')
 
         # choose testing or training mode
         training_mode = ask.selection(MESSAGES['choose_mode'], list(MODES_PRETTY.values())) == MODES_PRETTY['testing']
