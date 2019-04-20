@@ -22,28 +22,46 @@ def train_loop(data: collections.OrderedDict, flags: parser.FlagsParser) -> None
 
 
 def testing_loop(data: collections.OrderedDict, flags: parser.FlagsParser) -> tuple:
+    # init lists
     found = list()
     notfound = list()
+    # for each learndata item
     for asked, answer in data.items():
+        # if we found the correct answer
         if ask.get_ans(asked, answer, flags):
+            # displays the message
             cprint("Correct !", "green")
+            # adds the question to found list
             found.append(asked)
+        # if we failed
         else:
+            # show the answer if --show-answer-in-testing-mode allows it
             if flags.show_answer_in_testing_mode:
                 cprint("The correct answer was: {}".format(answer), 'red')
+            # or just simply print "Wrong"
             else:
                 cprint("Wrong", 'red')
+            # adds the question to notfound list
             notfound.append(asked)
 
+        # if --always-show-grade allows it, calculate and print the grade after each answer
         if flags.always_show_grade:
             show_grade(found, data, flags)
     return found, notfound
 
 
 def show_grade(found, data: collections.OrderedDict, flags: parser.FlagsParser) -> float:
+    # get grade: the number of questions found (correctly answered) divided by --grade-max,
+    # rounded to --grade-precision digits
     grade = round(len(found) / flags.grade_max, flags.grade_precision)
+    # get color based on the threshold (--grade-max * --good-grade)
+    # if the calculated grade is higher or equal to that threshold, set the text to green
+    # else set it to red
     color = 'green' if grade >= flags.grade_max * flags.good_grade else 'red'
+    # show values, with converted grade, and original grade (correctly answered / total number of learndata items)
     cprint('Your grade: {}/{} ({}/{})'.format(grade, int(flags.grade_max), len(found), len(data)), color)
+    # returns the grade in case we want to use the value for further processing
+    # todo if we ever need this, we should add a "no_print" argument to the function
     return grade
 
 
@@ -56,12 +74,19 @@ def recap(data: collections.OrderedDict) -> None:
 
 
 def header(flags: parser.FlagsParser, custom_text: str = None):
+    # if a title is set (not to its default value, untitled)
+    # or we provided a custom_text argument (useful for the "Debug info" header,
+    # prevents duplicate code by re-using the same function, and respecting
+    # --header and --header-color)
     if flags.title != 'untitled' or custom_text:
+        # set the flag to the custom_text
+        # if custom_text is not provided, use --title
         text = custom_text or flags.title
+        # prints the header with the appropriate color and style
         cprint(flags.header.replace('<>', text), flags.header_color)
 
 
-def main(learndata_file=DATA_FILE):
+def main(learndata_file=DATA_FILE) -> int:
     try:
         # parse the flags and data from the text file
         data, flags = parser.parse_file(learndata_file)
