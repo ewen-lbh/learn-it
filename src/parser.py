@@ -179,10 +179,20 @@ class FlagsParser:
             # If the flag's value type does not match the one described in FLAGS_TYPES,
             # (eg. we passed a list to the --case-sensitive flag),
             # ignore the flag's value and fallback to the default one
-            if type(val) is not FLAGS_TYPES[flag]:
-                val = default
+            # FLAGS_TYPES can also contain a tuple of acceptable values. If this is the case,
+            # check if the flag's value is in the available values
+            legal_vals_type = FLAGS_TYPES[flag]
+            # if the type is a tuple, the flags accepts discrete values instead of a specific type of values.
+            if type(legal_vals_type) == tuple:
+                flag_value_is_legal = val in legal_vals_type
+            else:
+                flag_value_is_legal = type(val) == legal_vals_type
 
-            real_flags[flag] = val
+            if flag_value_is_legal:
+                real_flags[flag] = val
+            else:
+                real_flags[flag] = default
+                log.warning(f'Illegal value "{val}" for flag --{flag}, ignoring.\nAccept values are:{legal_vals_type}')
 
         # Get the name of flags that were parsed but that aren't in FLAGS_DEFAULTS (aka unknown flags)
         for flag in [k for k, v in {k: v for k, v in flags.items() if k not in FLAGS_DEFAULTS.keys()}.items()]:
@@ -194,7 +204,7 @@ class FlagsParser:
         for flag, val in real_flags.items():
             setattr(self, flag.replace('-', '_'), val)
 
-    def to_dict(self) -> dict:
+    def __dict__(self) -> dict:
         ret = {}
         for flag in FLAGS_DEFAULTS.keys():
             ret[flag] = getattr(self, flag.replace('-', '_'))

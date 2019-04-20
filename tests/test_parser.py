@@ -2,6 +2,7 @@ import os
 import unittest
 
 import src.helpers
+import src.consts
 import src.parser
 
 
@@ -52,3 +53,11 @@ class Data(unittest.TestCase):
             'Hello': 'Bonjour', 'Aurevoir': 'Bye', 'Hehehe': 'goood sh*t', 'lol--ask-sentence': '---ayylmao True',
         })
         self.assertEqual(flags, {})
+
+class FlagsValueChecking(unittest.TestCase):
+    def test_illegal_value(self):
+        lines = learndata('test_flag_illegal_value')
+        data, flags = src.parser.parse(lines)
+        flags = src.parser.FlagsParser(flags)
+        self.assertEqual(data, {})
+        self.assertEqual(flags.ask_order, src.consts.FLAGS_DEFAULTS['ask-order'])

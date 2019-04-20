@@ -49,8 +49,30 @@ FLAGS_DEFAULTS = {
 
 # automaticaly get flag types from defaults
 # warning: this will only work for flags that accept a SINGLE type
-# todo specify allowed value(s) / type(s) instead
-FLAGS_TYPES = {flag: type(default) for flag, default in FLAGS_DEFAULTS.items()}
+# FLAGS_TYPES = {flag: type(default) for flag, default in FLAGS_DEFAULTS.items()}
+
+FLAGS_TYPES = {
+    # 'and-syntax'                 : str,
+    # 'or-syntax'                  : str,
+    # 'no-colors'                  : bool,
+    'always-show-grade'          : bool,
+    'ask-for'                    : ('values', 'both', 'keys'),
+    'ask-for-typos'              : bool,
+    'ask-order'                  : ('random', 'keep', "alphabetical"),
+    'ask-sentence'               : str,
+    'case-sensitive'             : bool,
+    'debug'                      : bool,
+    'good-grade'                 : float,
+    'grade-max'                  : int,
+    'grade-precision'            : int,
+    'header'                     : str,
+    'header-color'               : ('white', 'red', 'yellow', 'green', 'cyan', 'blue', 'magenta'),
+    'show-answer-in-testing-mode': bool,
+    'show-items-count'           : bool,
+    'title'                      : str,
+    'warn-unknown-flags'         : bool,
+    'whitelist'                  : list,
+}
 
 # Get real and absolute paths for DATA_FILE and PRESETS_FILE
 LEARNDATA_ROOT = os.path.normpath(os.path.expanduser(LEARNDATA_ROOT))
@@ -61,5 +83,5 @@ PRESETS_FILE = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__f
 LOGGING_LEVELS = ["FATAL", "ERROR", "WARNING", "INFO", "DEBUG"]
 # termcolor attributes, comma-separated (with a space after the comma)
 LOGGING_LEVELS_FORMATTING = {
-    "FATAL": "white, on_red", "ERROR": "red", "WARNING": "yellow", "INFO": "white", "DEBUG": "grey"
+    "FATAL": "white, on_red", "ERROR": "red", "WARNING": "yellow", "INFO": "white", "DEBUG": "white"
 }
