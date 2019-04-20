@@ -94,7 +94,8 @@ def get_logging_props(level: str) -> tuple:
     return getattr(logging, level), colored('%(levelname)s: %(message)s', *termcolor_attrs)
 
 
-def main(learndata_file=DATA_FILE) -> int:
+def main(sys_argv) -> int:
+
     try:
         # ---logging config---
         # we need to get level and debug flags before anything else because
@@ -115,6 +116,25 @@ def main(learndata_file=DATA_FILE) -> int:
         # currently, the solution 1 has been applied
         logging_level, logging_format = get_logging_props(LOG_LEVEL)
         logging.basicConfig(level=logging_level, format=logging_format)
+
+        # the first sys.argv is "run.py", the hypothetical second item
+        # is going to be the learndata file's path.
+
+        # check if any filepath was specified
+        if len(sys_argv) < 2:
+            # fall back to DATA_FILE
+            learndata_file = DATA_FILE
+        else:
+            # get filepath
+            data_file_maybe = helpers.get_absolute_path(sys_argv[1])
+            # check file existance
+            if os.path.isfile(data_file_maybe):
+                # set it as the learndata_file
+                learndata_file = data_file_maybe
+            else:
+                # raise error and fall back to DATA_FILE
+                logging.error(f"File {data_file_maybe} not found. \nFalling back to {DATA_FILE}")
+                learndata_file = DATA_FILE
 
         # parse the flags and data from the text file
         data, flags = parser.parse_file(learndata_file)
@@ -155,6 +175,3 @@ def main(learndata_file=DATA_FILE) -> int:
         cprint("\nProcess closed by user.", 'red')
         return 1
 
-
-if __name__ == '__main__':
-    main()

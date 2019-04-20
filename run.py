@@ -1,6 +1,8 @@
 import subprocess
 import sys
 
+from src import helpers
+
 try:
     import termcolor
 except ModuleNotFoundError:
@@ -18,7 +20,4 @@ except ModuleNotFoundError:
 from src.main import main
 from src.consts import DATA_FILE
 
-if len(sys.argv) > 1:
-    if sys.argv[1] == 'edit':
-        subprocess.call(['vim', DATA_FILE])
-main()
+main(sys.argv)

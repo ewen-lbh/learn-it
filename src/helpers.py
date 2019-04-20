@@ -1,3 +1,6 @@
+import os
+
+
 def pprint_dict(data: dict, pad: int = 1, sep: str = ': ', column_names: tuple = None, return_str: bool = False):
     k_maxlen = max([len(str(e)) for e in data.keys()])
     v_maxlen = max([len(str(e)) for e in data.values()])
@@ -28,3 +31,7 @@ def strip_list(iterable: list) -> list:
     iterable = list(reversed(_partial_strip(list(reversed(iterable)))))
 
     return iterable
+
+
+def get_absolute_path(path: str) -> str:
+    return os.path.abspath(os.path.expanduser(path))
