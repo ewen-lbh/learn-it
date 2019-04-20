@@ -54,9 +54,9 @@ def testing_loop(data: collections.OrderedDict, flags: parser.FlagsParser) -> tu
 
 
 def show_grade(found, data: collections.OrderedDict, flags: parser.FlagsParser) -> float:
-    # get grade: the number of questions found (correctly answered) divided by --grade-max,
-    # rounded to --grade-precision digits
-    grade = round(len(found) / flags.grade_max, flags.grade_precision)
+    # get grade: the number of questions found (correctly answered) divided by the total number of questions
+    # rounded to --grade-precision digits and converted to fit --grade-max
+    grade = round(len(found) / len(data) * flags.grade_max, flags.grade_precision)
     # get color based on the threshold (--grade-max * --good-grade)
     # if the calculated grade is higher or equal to that threshold, set the text to green
     # else set it to red
