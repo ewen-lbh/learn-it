@@ -4,6 +4,7 @@ import itertools
 import json
 import logging as log
 import random
+import sys
 
 from src import helpers
 from src.consts import *
@@ -162,6 +163,9 @@ def parse(lines: list) -> tuple:
 
 
 def parse_file(filepath: str) -> tuple:
+    if not os.path.isfile(filepath):
+        log.fatal(f'File "{filepath}" does not exist')
+        sys.exit()
     with open(filepath, 'r', encoding='utf8') as f:
         lines = f.readlines()
     return parse(lines)
