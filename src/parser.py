@@ -182,6 +182,11 @@ class FlagsParser:
 
             real_flags[flag] = val
 
+        # Get the name of flags that were parsed but that aren't in FLAGS_DEFAULTS (aka unknown flags)
+        for flag in [k for k,v in {k:v for k, v in flags.items() if k not in FLAGS_DEFAULTS.keys()}.items()]:
+            # Print a warning message if warn-unknown-flags is on.
+            if real_flags['warn-unknown-flags']: log.warning(f'Unknown flag "{flag}", ignoring')
+
         # set attribues programmatically, changing dashes to undescores
         # for the attributes names
         for flag, val in real_flags.items():

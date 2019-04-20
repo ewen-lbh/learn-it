@@ -24,7 +24,7 @@ FLAGS_DEFAULTS = {
     # 'and-syntax'                 : '&&',
     # 'or-syntax'                  : '||',
     # 'no-colors'                  : False,
-    # 'warn-unknown-flags'         : True,
+    'warn-unknown-flags'         : True,
     'always-show-grade'          : False,
     'ask-for'                    : 'values',
     'ask-for-typos'              : False,
