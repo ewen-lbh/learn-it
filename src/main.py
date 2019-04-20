@@ -62,41 +62,45 @@ def header(flags: parser.FlagsParser, custom_text: str = None):
 
 
 def main(learndata_file=DATA_FILE):
-    # parse the flags and data from the text file
-    data, flags = parser.parse_file(learndata_file)
-    # convert the flags into a parser.FlagsParser object, and clean up flags by:
-    # - adding non-declared flags with their default values
-    # - removing unknown flags
-    flags = parser.FlagsParser(flags)
-    # transform data according to the flags
-    data = parser.handle_flags(data, flags)
+    try:
+        # parse the flags and data from the text file
+        data, flags = parser.parse_file(learndata_file)
+        # convert the flags into a parser.FlagsParser object, and clean up flags by:
+        # - adding non-declared flags with their default values
+        # - removing unknown flags
+        flags = parser.FlagsParser(flags)
+        # transform data according to the flags
+        data = parser.handle_flags(data, flags)
 
-    # debug
-    header(flags, custom_text='Debug info')
-    if flags.debug:
-        print(flags)
-        helpers.pprint_dict(data, sep='', column_names=('KEYS', 'VALUES'))
+        # debug
+        if flags.debug:
+            header(flags, custom_text='Debug info')
+            print(flags)
+            helpers.pprint_dict(data, sep='', column_names=('KEYS', 'VALUES'))
 
-    # print header
-    header(flags)
+        # print header
+        header(flags)
 
-    # print loaded items count
-    if flags.show_items_count:
-        cprint('Loaded {} item{} from {}'.format(len(data), 's' if len(data) != 1 else '', DATA_FILE), 'green')
+        # print loaded items count
+        if flags.show_items_count:
+            cprint('Loaded {} item{} from {}'.format(len(data), 's' if len(data) != 1 else '', DATA_FILE), 'green')
 
-    # choose testing or training mode
-    training_mode = ask.selection(MESSAGES['choose_mode'], list(MODES_PRETTY.values())) == MODES_PRETTY['testing']
+        # choose testing or training mode
+        training_mode = ask.selection(MESSAGES['choose_mode'], list(MODES_PRETTY.values())) == MODES_PRETTY['testing']
 
-    if training_mode:
-        found, notfound = testing_loop(data, flags)
-        show_grade(found, data, flags)
-    else:
-        # in training mode, all items are always found
-        notfound = list()
-        train_loop(data, flags)
+        if training_mode:
+            found, notfound = testing_loop(data, flags)
+            show_grade(found, data, flags)
+        else:
+            # in training mode, all items are always found
+            notfound = list()
+            train_loop(data, flags)
 
-    if len(notfound):
-        recap(data)
+        if len(notfound):
+            recap(data)
+    except KeyboardInterrupt:
+        cprint("\nProcess closed by user.", 'red')
+        return 1
 
 
 if __name__ == '__main__':
