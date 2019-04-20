@@ -215,7 +215,7 @@ class FlagsParser:
         return ret
 
     def __str__(self):
-        return helpers.pprint_dict(self.to_dict(), sep='', column_names=('FLAG NAMES', 'VALUES'), return_str=True)
+        return helpers.pprint_dict(self.__dict__(), sep='', column_names=('FLAG NAMES', 'VALUES'), return_str=True)
 
 
 def transform_learndata(data: collections.OrderedDict, flags: FlagsParser) -> collections.OrderedDict:
