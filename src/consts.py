@@ -24,7 +24,6 @@ FLAGS_DEFAULTS = {
     # 'and-syntax'                 : '&&',
     # 'or-syntax'                  : '||',
     # 'no-colors'                  : False,
-    'warn-unknown-flags'         : True,
     'always-show-grade'          : False,
     'ask-for'                    : 'values',
     'ask-for-typos'              : False,
@@ -37,9 +36,11 @@ FLAGS_DEFAULTS = {
     'grade-precision'            : 2,
     'header'                     : '---- <> ----',
     'header-color'               : 'cyan',
+    'log-level'                  : 'warning',
     'show-answer-in-testing-mode': True,
     'show-items-count'           : DEBUG,
     'title'                      : 'untitled',
+    'warn-unknown-flags'         : True,
     'whitelist'                  : [],
 }
 
@@ -54,3 +55,6 @@ AUTO_ANSWER = False
 LEARNDATA_ROOT = os.path.normpath(os.path.expanduser(LEARNDATA_ROOT))
 DATA_FILE = os.path.abspath(os.path.join(LEARNDATA_ROOT, DATA_FILE))
 PRESETS_FILE = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), PRESETS_FILE))
+
+# available logging levels
+LOGGING_LEVELS = ["FATAL", "ERROR", "WARNING", "INFO", "DEBUG"]

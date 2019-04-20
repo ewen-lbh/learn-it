@@ -38,12 +38,14 @@ Available flags:
 |ask-for|What to ask for: keys, values or both (starting with keys)|keys, values, both|values    
 |ask-order|Order according to which the items are asked about. Doesn't affect *training mode*|keep, alphabetical, random|keep    
 |ask-sentence|Use this to change the sentence used to ask about an item. `<>` is replaced with the item asked about|How do you say <> in russian ?|<>    
-|case-sensitive|Take case into account when comparing answers|True, False|False    
+|case-sensitive|Take case into account when comparing answers|True, False|False
+|debug|Sets the debug mode. With this mode, the logging level is set to `DEBUG`, and parsed data is shown at the beginning.|True, False|False    
 |good-grade|Grades greater or equal to this will be shown green, while others will be shown red. The good-grade value is calculated by multiplying it by the max-grade value.|0.75|0.5    
 |grade-max|Indicate the divisor (maximum grade) used in *testing mode*.|20|100    
 |grade-precision|Specify the precision used to round the grade value|1|2  
 |header-color|The header's color. Avaible colors: grey, red, green, yellow, blue, magenta, cyan, white|red|cyan  
-|header|Text shown at the beginning of the script. `<>` is replaced with `--title`'s value|<>|\-\-\- <> \-\-\-|  
+|header|Text shown at the beginning of the script. `<>` is replaced with `--title`'s value|<>|\-\-\- <> \-\-\-|
+|log-level|Sets the logging level used. Setting `--debug` to True overrides this and sets the logging level to `DEBUG`|fatal, error, warning, info, debug|warning|  
 |preset|Use a [flags preset](#presets).|languages||
 |show-answer-in-testing-mode|In testing mode, show the correct answer when the provided answer was wrong. (This behavior is always active in training mode)|True, False|True  
 |show-items-count|Shows a message at the start that says: "Loaded *N* items from *FILE*"|True, False|True  

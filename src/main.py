@@ -1,3 +1,4 @@
+import logging
 import random
 import collections
 from termcolor import cprint
@@ -84,6 +85,14 @@ def header(flags: parser.FlagsParser, custom_text: str = None):
         cprint(flags.header.replace('<>', text), flags.header_color)
 
 
+def get_logging_level(flags:parser.FlagsParser) -> logging.level:
+    level = LOGGING_LEVELS.get(flags.log_level.upper(), "WARNING")
+    if flags.debug:
+        level = "DEBUG"
+
+    return getattr(logging, level)
+
+
 def main(learndata_file=DATA_FILE) -> int:
     try:
         # parse the flags and data from the text file
@@ -100,6 +109,9 @@ def main(learndata_file=DATA_FILE) -> int:
             header(flags, custom_text='Debug info')
             print(flags)
             helpers.pprint_dict(data, sep='', column_names=('KEYS', 'VALUES'))
+
+        # logging module's level
+        logging.basicConfig(level=get_logging_level(flags))
 
         # print header
         header(flags)
