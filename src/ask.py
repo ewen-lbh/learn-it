@@ -17,6 +17,7 @@ def get_ans(asked, answer, flags) -> bool:
 
     if not flags.case_sensitive:
         ans = ans.lower()
+        answer = answer.lower()
 
     if ans == answer:
         return True

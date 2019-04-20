@@ -198,10 +198,6 @@ class FlagsParser:
 
 
 def handle_flags(data: collections.OrderedDict, flags: FlagsParser) -> collections.OrderedDict:
-    # --case-sensitive
-    if not flags.case_sensitive:
-        data = {k.lower(): v.lower() for k, v in data.items()}
-
     # --whitelist
     if len(flags.whitelist):
         data = {k: v for k, v in data.items() if k in flags.whitelist}
