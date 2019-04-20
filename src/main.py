@@ -67,10 +67,8 @@ def show_grade(found, data: collections.OrderedDict, flags: parser.FlagsParser) 
 
 def recap(data: collections.OrderedDict) -> None:
     cprint("You need to learn about:", 'red')
-    maxlen = max([len(e) for e in data.keys()])
-    for asked, answer in data.items():
-        sp = ' ' * (3 + (maxlen - len(asked)))
-        print('{}{}:{}'.format(asked, sp, answer))
+    # prints nicely the items provided
+    helpers.pprint_dict(data)
 
 
 def header(flags: parser.FlagsParser, custom_text: str = None):
