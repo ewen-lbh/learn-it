@@ -196,12 +196,14 @@ class FlagsParser:
                 real_flags[flag] = val
             else:
                 real_flags[flag] = default
-                log.warning(f'Illegal value "{val}" for flag --{flag}, ignoring.\nAccept values are:{legal_vals_type}')
+                # log.warning(f'Illegal value "{val}" for flag --{flag}, ignoring.\nAccept values are:{
+                # legal_vals_type}')
+                log.warning(T['illegal_flag_value'].format(val=val, flag=flag, legal_vals_type=legal_vals_type))
 
         # Get the name of flags that were parsed but that aren't in FLAGS_DEFAULTS (aka unknown flags)
         for flag in [k for k, v in {k: v for k, v in flags.items() if k not in FLAGS_DEFAULTS.keys()}.items()]:
             # Print a warning message if warn-unknown-flags is on.
-            if real_flags['warn-unknown-flags']: log.warning(f'Unknown flag "{flag}", ignoring')
+            if real_flags['warn-unknown-flags']: log.warning(T['unknown_flag'].format(flag))
 
         # set attribues programmatically, changing dashes to undescores
         # for the attributes names

@@ -1,6 +1,8 @@
 import os
 import re
 
+from src import helpers
+
 if os.name == 'nt':
     LEARNDATA_ROOT = 'D:\\Users\\ewenl\\Documents\\work\\learndata'
 else:
@@ -8,6 +10,7 @@ else:
 
 DATA_FILE = 'maths/suites.txt'
 LOG_LEVEL = 'WARNING'
+LANGUAGE = 'fr'
 
 PRESETS_FILE = 'presets.json'
 DEBUG = False
@@ -20,13 +23,8 @@ SYNTAX = {
     'comments': re.compile(r'(?://)|(?:#) (.+)')
 }
 
-MESSAGES = {
-    'choose_mode': 'Choose a mode:\n<choices>'
-}
+T = helpers.get_translations(LANGUAGE)
 
-MODES_PRETTY = {
-    'training': 'Training mode', 'testing': 'Testing mode'
-}
 
 FLAGS_DEFAULTS = {
     # 'and-syntax'                 : '&&',

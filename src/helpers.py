@@ -1,3 +1,4 @@
+import json
 import os
 
 
@@ -36,7 +37,25 @@ def strip_list(iterable: list) -> list:
 def get_absolute_path(path: str) -> str:
     return os.path.abspath(os.path.expanduser(path))
 
-def path_contract_user(path:str) -> str:
+
+def path_contract_user(path: str) -> str:
     return path.replace(os.path.expanduser('~'), '~', 1)
+
+
 def invert_dict_mapping(dikt: dict) -> dict:
     return {v: k for k, v in dikt.items()}
+
+
+def path_go_up(path: str, times: int = 1) -> str:
+    path = os.path.abspath(path)
+    for _ in range(times):
+        path = os.path.dirname(path)
+    return path
+
+
+def get_translations(lang='en'):
+    translations_dir = path_go_up(__file__, 2) + '/translations'
+    with open(os.path.abspath(f'{translations_dir}/{lang}.json'), 'r', encoding='utf8') as f:
+        raw = f.read()
+
+    return json.loads(raw)

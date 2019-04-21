@@ -19,9 +19,9 @@ def train_loop(data: collections.OrderedDict, flags: parser.FlagsParser) -> None
         if ask.get_ans(asked, answer, flags):
             # add the question to found
             found.append(asked)
-            cprint('Correct !', 'green')
+            cprint(T['correct'], "green")
         else:
-            cprint('The correct answer was "{}"'.format(answer), 'red')
+            cprint(T['correct_answer'].format(answer), 'red')
 
 
 def testing_loop(data: collections.OrderedDict, flags: parser.FlagsParser) -> tuple:
@@ -33,17 +33,17 @@ def testing_loop(data: collections.OrderedDict, flags: parser.FlagsParser) -> tu
         # if we found the correct answer
         if ask.get_ans(asked, answer, flags):
             # displays the message
-            cprint("Correct !", "green")
+            cprint(T['correct'], "green")
             # adds the question to found list
             found.append(asked)
         # if we failed
         else:
             # show the answer if --show-answer-in-testing-mode allows it
             if flags.show_answer_in_testing_mode:
-                cprint("The correct answer was: {}".format(answer), 'red')
+                cprint(T['correct_answer'].format(answer), 'red')
             # or just simply print "Wrong"
             else:
-                cprint("Wrong", 'red')
+                cprint(T['wrong'], 'red')
             # adds the question to notfound list
             notfound.append(asked)
 
@@ -153,15 +153,17 @@ def main(sys_argv) -> int:
         # - adding non-declared flags with their default values
         # - removing unknown flags
         flags = parser.FlagsParser(flags)
+        # keep the original data's length (used for --show-items-count)
+        full_data_count = len(data)
         # transform learndata according to the flags
         data = parser.transform_learndata(data, flags)
 
         # debug
         if flags.debug:
             header(flags, custom_text='Debug info')
-            print(flags)
-            print('')
             helpers.pprint_dict(data, sep='', column_names=('KEYS', 'VALUES'))
+            print('')
+            print(flags)
             print('')
 
         # print header
@@ -170,22 +172,27 @@ def main(sys_argv) -> int:
         # print loaded items count
         if flags.show_items_count:
             display_path = learndata_file.replace(LEARNDATA_ROOT, '').lstrip('\\').lstrip('/')
-            cprint('Loaded {} item{} from {}'.format(len(data), 's' if len(data) != 1 else '', display_path), 'green')
+            cprint(T['loaded_items'].format(
+                count=len(data),
+                o_count=full_data_count,
+                s='s' if len(data) != 1 else '',
+                file=display_path)
+            , 'green')
 
         # choose testing or training mode
-        training_mode = ask.selection(MESSAGES['choose_mode'], list(MODES_PRETTY.values())) == MODES_PRETTY['testing']
+        training_mode = ask.selection(T['choose_mode'], (T['testing'],T['training'])) == T['testing']
 
-        if training_mode:
-            found, notfound = testing_loop(data, flags)
-            show_grade(found, data, flags)
-        else:
-            # in training mode, all items are always found
-            notfound = list()
-            train_loop(data, flags)
+            if training_mode:
+                found, notfound = testing_loop(data, flags)
+                show_grade(found, data, flags)
+            else:
+                # in training mode, all items are always found
+                notfound = list()
+                train_loop(data, flags)
 
         if len(notfound):
-            recap(data)
+                recap(data)
     except KeyboardInterrupt:
-        cprint("\nProcess closed by user.", 'red')
+        cprint("\n" + T['process_closed_by_user'], 'red')
         return 1
 
