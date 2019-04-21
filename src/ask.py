@@ -47,7 +47,7 @@ def selection(msg: str, choices: list, shortcuts=True, shortcuts_level: int = 1)
 
     # HANDLING SHORTCUTS {
     if shortcuts:
-        shortcuts_map = {choice[:shortcuts_level]: choice for choice in choices}
+        shortcuts_map = {choice[:shortcuts_level].lower(): choice for choice in choices}
         # remove duplicates from the list of shortcuts, and get the length
         deduped = list(set(list(shortcuts_map.keys())))
         # see if shortcuts are unambiguous by seeing if we removed any duplicates
@@ -70,7 +70,7 @@ def selection(msg: str, choices: list, shortcuts=True, shortcuts_level: int = 1)
         elif ambiguous_shortcuts:
             choicelist.append('{}: {}'.format(shortcut, choice))
         else:
-            choicelist.append('[{}]{}'.format(shortcut, choice[len(shortcut):]))
+            choicelist.append('[{}]{}'.format(shortcut.upper(), choice[len(shortcut):]))
 
     msg = msg.replace('<choices>', '\n'.join(choicelist)) + '\n>'
     # }
