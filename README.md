@@ -87,17 +87,19 @@ You would think that putting `\&&` would consider the first ampersand as a liter
 ### Presets
 The `src/presets.json` file contains a single preset named *languages*. Obviously, you can add more presets.
 The file in itself is an object that contains presets, using their names as the property (the key), and the value being another object, that associates flags with their values :
-
-    {
-		"preset_name": {
-			"flag":"value",
-			"other_flag":"other_value"
-			...
-		},
-		"other_preset_name":{
-			...
-		}
-	}
+    
+```json    
+{
+    "preset_name": {
+        "flag":"value",
+        "other_flag":"other_value"
+        ...
+    },
+    "other_preset_name":{
+        ...
+    }
+}
+```
 
 Adding the leading double dash in the flag names is optional.
 #### Overriding
@@ -105,12 +107,16 @@ If you specify a preset that declares a flag, and that you also specify a value 
 *Example*
 		
 
-    presets.json:
-	"thingy":{"whitelist":"[stuff, things]"}
+presets.json:
+```json
+"thingy":{"whitelist":"[stuff, things]"}
+```
 
-	learndata.txt:
-	--whitelist [spam, eggs]
-	--preset thingy
+learndata.txt:
+```
+--whitelist [spam, eggs]
+--preset thingy
+```
 
 In this example, `--whitelist` will take the value `[spam, eggs]`, even if `--preset` is declared 
 after `--whitelist`.
