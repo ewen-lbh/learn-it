@@ -35,3 +35,6 @@ def strip_list(iterable: list) -> list:
 
 def get_absolute_path(path: str) -> str:
     return os.path.abspath(os.path.expanduser(path))
+
+def path_contract_user(path:str) -> str:
+    return path.replace(os.path.expanduser('~'), '~', 1)

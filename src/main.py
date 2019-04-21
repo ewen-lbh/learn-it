@@ -91,7 +91,7 @@ def get_logging_props(level: str) -> tuple:
     level = level.upper() if level in LOGGING_LEVELS else "WARNING"
     termcolor_attrs = LOGGING_LEVELS_FORMATTING[level].split(', ')
 
-    return getattr(logging, level), colored('%(levelname)s: %(message)s', *termcolor_attrs)
+    return getattr(logging, level), colored('%(levelname)s: %(message)s', 'yellow')
 
 
 def main(sys_argv) -> int:
@@ -125,16 +125,27 @@ def main(sys_argv) -> int:
             # fall back to DATA_FILE
             learndata_file = DATA_FILE
         else:
-            # get filepath
             data_file_maybe = helpers.get_absolute_path(sys_argv[1])
             # check file existance
             if os.path.isfile(data_file_maybe):
                 # set it as the learndata_file
                 learndata_file = data_file_maybe
             else:
-                # raise error and fall back to DATA_FILE
-                logging.error(f"File {data_file_maybe} not found. \nFalling back to {DATA_FILE}")
-                learndata_file = DATA_FILE
+                # try changing the dir for the filepath with LEARNDATA_ROOT...
+                logging.info(f"File {helpers.path_contract_user(data_file_maybe)} does not exist. Assuming that it's located in {helpers.path_contract_user(LEARNDATA_ROOT)}...")
+                data_file_maybe = os.path.abspath(os.path.join(LEARNDATA_ROOT, sys_argv[1]))
+                if os.path.isfile(data_file_maybe):
+                    learndata_file = data_file_maybe
+                else:
+                    # try adding .txt at the end...
+                    logging.info(f"File {helpers.path_contract_user(data_file_maybe)} does not exist. Trying to add .txt at the end...")
+                    data_file_maybe += '.txt'
+                    if os.path.isfile(data_file_maybe):
+                        learndata_file = data_file_maybe
+                    else:
+                        # raise error and fall back to DATA_FILE
+                        logging.error(f"File {helpers.path_contract_user(data_file_maybe)} not found. \n       Falling back to {helpers.path_contract_user(DATA_FILE)}")
+                        learndata_file = DATA_FILE
 
         # parse the flags and data from the text file
         data, flags = parser.parse_file(learndata_file)
