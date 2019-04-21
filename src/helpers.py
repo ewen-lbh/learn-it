@@ -38,3 +38,5 @@ def get_absolute_path(path: str) -> str:
 
 def path_contract_user(path:str) -> str:
     return path.replace(os.path.expanduser('~'), '~', 1)
+def invert_dict_mapping(dikt: dict) -> dict:
+    return {v: k for k, v in dikt.items()}

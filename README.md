@@ -37,7 +37,8 @@ Available flags:
 |ask-for-typos|Whether to ask if you made typo when you got an answer wrong. If you made a typo, you have another chance to find the word.|True, False|False    
 |ask-for|What to ask for: keys, values or both (starting with keys)|keys, values, both|values    
 |ask-order|Order according to which the items are asked about. Doesn't affect *training mode*|keep, alphabetical, random|keep    
-|ask-sentence|Use this to change the sentence used to ask about an item. `<>` is replaced with the item asked about|How do you say <> in russian ?|<>    
+|ask-sentence|Use this to change the sentence used to ask about an item. `<>` is replaced with the item asked about|How do you say <> in russian ?|<>
+|blacklist|Like whitelist, except it prevents specified items from being asked. Useful if you already know some items in the learndata|[spam, eggs]|[]    
 |case-sensitive|Take case into account when comparing answers|True, False|False
 |debug|Sets the debug mode. |True, False|False    
 |good-grade|Grades greater or equal to this will be shown green, while others will be shown red. The good-grade value is calculated by multiplying it by the max-grade value.|0.75|0.5    
@@ -57,8 +58,9 @@ Available flags:
   
   
 NOTE: `True` and `False` values aren't case sensitive, so you can also write `true` and `false`.  
-Lists are defined with square brackets and separated by commas **without spaces**. Example:  
-`[a,list]`  
+Lists are defined with square brackets and separated by commas. Example:  
+`[a, list]`  
+You can add spaces after or before commas, they're ignored because list items are stripped (trailing & leading spaces are removed)
   
 #### Logical operators  
 Two logical operators are supported: *AND* and *OR*  
@@ -66,10 +68,15 @@ Their default syntax is respectively `&&` and `||` (you can change that with the
 ##### Example  
 Context: a french vocabulary test with synonyms  
   
- Bus Bus || Car    Hello  
- Bonjour && Salut  
+    Bus
+    Bus || Car
+    
+    Hello
+    Bonjour && Salut 
 
-Note the spaces around the operators: you could remove those, but since individuals items are *stripped* (spaces preceding and following words are removed),  additional spaces don't affect words  
+Note the spaces around the operators: you could remove those, but since individuals items are *stripped* (spaces preceding and following words are removed),  additional spaces don't affect words
+
+*Yes, I know that bonjour and salut are not the same thing, calm down*  
   
 ##### Escaping the operators symbols  
 You would think that putting `\&&` would consider the first ampersand as a literal ampersand, and would therefore not consider this as a special symbol. This feature is on the roadmap, but does not work for now. That's the main reason why`--<operator>-syntax` flags exist.  

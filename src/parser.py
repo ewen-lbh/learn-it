@@ -223,6 +223,9 @@ def transform_learndata(data: collections.OrderedDict, flags: FlagsParser) -> co
     if len(flags.whitelist):
         data = {k: v for k, v in data.items() if k in flags.whitelist}
 
+    # --blacklist
+    if len(flags.blacklist):
+            data = {k: v for k, v in data.items() if k not in flags.blacklist}
     # --ask-order
     if flags.ask_order == 'random':
         shuffled = list(data.items())

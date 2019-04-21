@@ -16,7 +16,7 @@ AUTO_ANSWER = False
 SYNTAX = {
     'flags'   : re.compile(r'--([\w][\w\-]*)(?:[ =](.+))?'),  # [0]: trues, [1]: falses
     'booleans': (('true', 'yes', 'on'), ('false', 'no', 'off')),
-    'lists'   : re.compile(r'\[([,\w]+)\]'),
+    'lists'   : re.compile(r'\[([,\w ]+)\]'),
     'comments': re.compile(r'(?://)|(?:#) (.+)')
 }
 
@@ -49,6 +49,7 @@ FLAGS_DEFAULTS = {
     'title'                      : 'untitled',
     'warn-unknown-flags'         : True,
     'whitelist'                  : [],
+    'blacklist'                  : [],
 }
 
 # automaticaly get flag types from defaults
@@ -76,6 +77,7 @@ FLAGS_TYPES = {
     'title'                      : str,
     'warn-unknown-flags'         : bool,
     'whitelist'                  : list,
+    'blacklist'                  : list,
 }
 
 # Get real and absolute paths for DATA_FILE and PRESETS_FILE
