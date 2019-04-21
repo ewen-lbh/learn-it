@@ -10,7 +10,7 @@ else:
 
 DATA_FILE = 'maths/suites.txt'
 LOG_LEVEL = 'WARNING'
-LANGUAGE = 'fr'
+LANGUAGE = 'en'
 
 PRESETS_FILE = 'presets.json'
 DEBUG = False
