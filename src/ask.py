@@ -4,7 +4,7 @@ from src.consts import *
 
 
 def yesno(msg) -> bool:
-    return input(msg + '\n(y/n)>').lower().strip().startswith('y')
+    return input('(y/n) ' + msg + '\n>').lower().strip().startswith(('y','ы','я'))
 
 
 def get_ans(asked, answer, flags) -> bool:
@@ -29,7 +29,7 @@ def get_ans(asked, answer, flags) -> bool:
         return False
 
 
-def selection(msg: str, choices: list, shortcuts=True, shortcuts_level: int = 1) -> str:
+def selection(msg: str, choices: list or tuple, shortcuts=True, shortcuts_level: int = 1) -> str:
     """
     Ask the user to select a choice in a given choices list. This is NOT case sensitive.
     :param msg: message to display.

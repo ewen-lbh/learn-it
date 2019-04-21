@@ -189,12 +189,13 @@ def main(sys_argv) -> int:
             else:
                 # in training mode, all items are always found
                 notfound = list()
-                found = list()
                 train_loop(data, flags)
 
             if len(notfound) and not no_recap:
                 recap(data)
 
+        # if we ask for keys AND values, execute main_loop (without showing a recap, it would give away the answers),
+        # invert the dict's mapping and execute main_loop again.
         if flags.ask_for == 'both':
             main_loop(training_mode, data, flags, no_recap=True)
             data = helpers.invert_dict_mapping(data)
