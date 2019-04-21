@@ -1,10 +1,10 @@
-
-# learn_it!  
-  
+# LEARN_IT!
 A script that helps you learn stuff.  
+
 **IMPORTANT NOTICE**: This is still an early work-in-progress project, and the only working version is contained in the `main.old.py` file. Most of the features shown here will not work, though the basics (modes and learndata files) will work.    
-  
-## "learndata" files  
+
+
+# "learndata" files  
   
 At the top of the script, there's a `DATA_FILE` variable.  
 Set it to the path (relative to the folder the script is executed in) of the learndata file you want to use, and run the script.  
@@ -12,10 +12,10 @@ The file will be parsed, and the training (or testing, see [modes](#modes)) will
   
     
   
-### The "learndata" text file format  
-#### Overview  
+## The "learndata" text file format  
+### Overview  
     --flag-name value  
-    # comment 
+    #comment 
     // another comment 
     Thing to learn about (the "key") 
     Its correct answer (the "value")  
@@ -23,10 +23,10 @@ The file will be parsed, and the training (or testing, see [modes](#modes)) will
     Other thing you should know by heart 
     Its correct answer  
     
-    # The empty line is mandatory, it separates each item
-    # See how the files are parsed in Core/main.py's parse() function
+    #The empty line is mandatory, it separates each item
+    #See how the files are parsed in Core/main.py's parse() function
   
-#### Flags  
+## Flags  
 Flags are used to set options.   
 Available flags:  
 *strikedthrough flag names indicate not-implemented-yet flags*  
@@ -57,15 +57,15 @@ Available flags:
 |~~or-syntax~~|Same as `and-syntax`, but used to specify a logical "or": *this* **or** *that*|, |\|\||    
   
   
-NOTE: `True` and `False` values aren't case sensitive, so you can also write `true` and `false`.  
+>`True` and `False` values aren't case sensitive, so you can also write `true` and `false`.  
 Lists are defined with square brackets and separated by commas. Example:  
 `[a, list]`  
 You can add spaces after or before commas, they're ignored because list items are stripped (trailing & leading spaces are removed)
   
-#### Logical operators  
+### Logical operators  
 Two logical operators are supported: *AND* and *OR*  
 Their default syntax is respectively `&&` and `||` (you can change that with the `--and-syntax` and `--or-syntax` flags.)  
-##### Example  
+#### Example  
 Context: a french vocabulary test with synonyms  
   
     Bus
@@ -74,15 +74,17 @@ Context: a french vocabulary test with synonyms
     Hello
     Bonjour && Salut 
 
-Note the spaces around the operators: you could remove those, but since individuals items are *stripped* (spaces preceding and following words are removed),  additional spaces don't affect words
+> Note the spaces around the operators: you could remove those,but since individuals items are *stripped* (spaces preceding 
+> and following words are removed),  additional spaces don't 
+> affect words
 
 *Yes, I know that bonjour and salut are not the same thing, calm down*  
   
-##### Escaping the operators symbols  
+#### Escaping the operators symbols  
 You would think that putting `\&&` would consider the first ampersand as a literal ampersand, and would therefore not consider this as a special symbol. This feature is on the roadmap, but does not work for now. That's the main reason why`--<operator>-syntax` flags exist.  
      
-#### Presets
-A `presets.json` file contains a single preset named *languages*. Obviously, you can add more presets.
+### Presets
+The `src/presets.json` file contains a single preset named *languages*. Obviously, you can add more presets.
 The file in itself is an object that contains presets, using their names as the property (the key), and the value being another object, that associates flags with their values :
 
     {
@@ -97,7 +99,7 @@ The file in itself is an object that contains presets, using their names as the 
 	}
 
 Adding the leading double dash in the flag names is optional.
-##### Overriding
+#### Overriding
 If you specify a preset that declares a flag, and that you also specify a value for that flag, the value defined in the learndata file will override the preset's.
 *Example*
 		
@@ -113,16 +115,17 @@ In this example, `--whitelist` will take the value `[spam, eggs]`, even if `--pr
 after `--whitelist`.
   
 
-#### File example  
-Take a look at `learndata/russian.txt` to get an idea of what a learndata text file looks like, and how the flags are used and defined.  
+### File example  
+Take a look at `learndata_example.txt` to get an idea of what a learndata text file looks like, and how the flags are used and defined.  
   
-## Modes  
+# Modes  
 This script uses 2 different modes: *testing mode* and *training mode*.  
-### Training mode  
+## Training mode  
 In this mode, the script cycles through the items (key-value pairs) and ask you to give your answer. If you fail, the script will ask you about it later, until you answered right to all the items.  
-### Test mode  
+## Test mode  
 In this mode, the script will ask you for each item *once* (except if you have the [`--ask-for-typos`](#flags) flag set to `True`).  
 At the end, it will tell you your grade and the list of items you did not find.
 
-## Logging levels
-You can change the logging level with  `LOG_LEVEL` (in src/consts.py)
+# Logging levels
+You can change the logging level with  `LOG_LEVEL` (in `src/consts.py`)
+
