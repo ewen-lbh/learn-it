@@ -182,16 +182,26 @@ def main(sys_argv) -> int:
         # choose testing or training mode
         training_mode = ask.selection(T['choose_mode'], (T['testing'],T['training'])) == T['testing']
 
+        def main_loop(training_mode:bool, data, flags, no_recap:bool=False):
             if training_mode:
                 found, notfound = testing_loop(data, flags)
                 show_grade(found, data, flags)
             else:
                 # in training mode, all items are always found
                 notfound = list()
+                found = list()
                 train_loop(data, flags)
 
-        if len(notfound):
+            if len(notfound) and not no_recap:
                 recap(data)
+
+        if flags.ask_for == 'both':
+            main_loop(training_mode, data, flags, no_recap=True)
+            data = helpers.invert_dict_mapping(data)
+            main_loop(training_mode, data, flags)
+        else:
+            main_loop(training_mode, data, flags)
+
     except KeyboardInterrupt:
         cprint("\n" + T['process_closed_by_user'], 'red')
         return 1
