@@ -10,7 +10,7 @@ else:
 
 DATA_FILE = 'maths/suites.txt'
 LOG_LEVEL = 'WARNING'
-LANGUAGE = 'en'
+LANGUAGE = 'fr'
 
 PRESETS_FILE = 'presets.json'
 DEBUG = False
@@ -34,7 +34,7 @@ FLAGS_DEFAULTS = {
     'ask-for-typos'              : False,
     'ask-order'                  : 'random',
     'ask-sentence'               : '<>',
-    'auto-blacklist'             : False
+    'auto-blacklist'             : False,
     'case-sensitive'             : False,
     'debug'                      : DEBUG,
     'good-grade'                 : 0.5,
