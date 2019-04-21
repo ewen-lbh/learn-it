@@ -94,8 +94,31 @@ def get_logging_props(level: str) -> tuple:
     return getattr(logging, level), colored('%(levelname)s: %(message)s', 'yellow')
 
 
-def main(sys_argv) -> int:
+def auto_blacklist(to_blacklist: list, flags: parser.FlagsParser, learndata_file: str):
+    with open(learndata_file, 'r', encoding='utf8') as f:
+        lines = f.read().split('\n')
+    newlines = list()
+    # removes blacklist declaration if found
+    for line in lines:
+        if SYNTAX['flags'].match(line):
+            flag = SYNTAX['flags'].search(line).group(1)
+            if flag == 'blacklist':
+                continue
+        newlines.append(line)
 
+    # adds items to the blacklist
+    blacklist = flags.blacklist + to_blacklist
+    # removes duplicates in list
+    blacklist = list(set(blacklist))
+    # todo implement this better, if SYNTAX['list'] changes, this doesn't.
+    declaration_line = '--blacklist [' + ', '.join(blacklist) + ']'
+    # prepends the blacklist declaration to the lines
+    newlines = [declaration_line] + newlines
+    with open(learndata_file, 'w', encoding='utf8') as f:
+        f.write('\n'.join(newlines))
+
+
+def main(sys_argv) -> int:
     try:
         # ---logging config---
         # we need to get level and debug flags before anything else because
@@ -193,6 +216,8 @@ def main(sys_argv) -> int:
 
             if len(notfound) and not no_recap:
                 recap(data)
+                if flags.auto_blacklist:
+                    auto_blacklist(data, flags)
 
         # if we ask for keys AND values, execute main_loop (without showing a recap, it would give away the answers),
         # invert the dict's mapping and execute main_loop again.

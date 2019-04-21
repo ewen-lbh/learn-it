@@ -25,7 +25,6 @@ SYNTAX = {
 
 T = helpers.get_translations(LANGUAGE)
 
-
 FLAGS_DEFAULTS = {
     # 'and-syntax'                 : '&&',
     # 'or-syntax'                  : '||',
@@ -35,6 +34,7 @@ FLAGS_DEFAULTS = {
     'ask-for-typos'              : False,
     'ask-order'                  : 'random',
     'ask-sentence'               : '<>',
+    'auto-blacklist'             : False
     'case-sensitive'             : False,
     'debug'                      : DEBUG,
     'good-grade'                 : 0.5,
@@ -63,6 +63,7 @@ FLAGS_TYPES = {
     'ask-for-typos'              : bool,
     'ask-order'                  : ('random', 'keep', "alphabetical"),
     'ask-sentence'               : str,
+    'auto-blacklist'             : bool,
     'case-sensitive'             : bool,
     'debug'                      : bool,
     'good-grade'                 : float,

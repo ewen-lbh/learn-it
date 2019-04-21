@@ -38,6 +38,7 @@ Available flags:
 |ask-for|What to ask for: keys, values or both (starting with keys)|keys, values, both|values    
 |ask-order|Order according to which the items are asked about. Doesn't affect *training mode*|keep, alphabetical, random|keep    
 |ask-sentence|Use this to change the sentence used to ask about an item. `<>` is replaced with the item asked about|How do you say <> in russian ?|<>
+|auto-blacklist|Use this to automatically add known words to the learndata file's `--blacklist`.|True, False|False
 |blacklist|Like whitelist, except it prevents specified items from being asked. Useful if you already know some items in the learndata|[spam, eggs]|[]    
 |case-sensitive|Take case into account when comparing answers|True, False|False
 |debug|Sets the debug mode. |True, False|False    
