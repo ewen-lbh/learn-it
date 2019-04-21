@@ -9,5 +9,8 @@
   "illegal_flag_value": "L'option \"{flag}\" ne peut prendre la valeur \"{val}\".\n         Valeur accept\u00e9es: {legal_vals_type}",
   "no_whitelist_and_blacklist": "Les options \"whitelist\" et \"blacklist\" ne peuvent \u00eatre utilis\u00e9es ensemble. La blacklist sera ignor\u00e9e",
   "testing": "Contrôle",
-  "training": "Entraînement"
+  "training": "Entraînement",
+  "assuming_learndata_root": "Le fichier {file} n'existe pas. Essai en prenant {directory} comme chemin de répertoire...",
+  "appending_.txt": "Le fichier {file} n'existe pas. Essai en ajoutant \".txt\" à la fin...",
+  "using_fallback_learndata": "Le fichier {file} n'existe pas. \n       Utilisation de {fallback} à la place..."
 }

@@ -4,7 +4,7 @@ import random
 
 from termcolor import cprint, colored
 
-from src import ask, parser, helpers
+from src import ask, parser
 from src.consts import *
 
 
@@ -86,6 +86,7 @@ def header(flags: parser.FlagsParser, custom_text: str = None):
         # prints the header with the appropriate color and style
         cprint(flags.header.replace('<>', text), flags.header_color)
 
+
 # todo fix the color, its based on LOGGING_LEVEL, it should be based on %(levelname)s .
 def get_logging_props(level: str) -> tuple:
     level = level.upper() if level in LOGGING_LEVELS else "WARNING"
@@ -155,19 +156,25 @@ def main(sys_argv) -> int:
                 learndata_file = data_file_maybe
             else:
                 # try changing the dir for the filepath with LEARNDATA_ROOT...
-                logging.info(f"File {helpers.path_contract_user(data_file_maybe)} does not exist. Assuming that it's located in {helpers.path_contract_user(LEARNDATA_ROOT)}...")
+                logging.info(T['assuming_learndata_root'].format(
+                    file=helpers.path_contract_user(data_file_maybe),
+                    directory=helpers.path_contract_user(LEARNDATA_ROOT)
+                ))
                 data_file_maybe = os.path.abspath(os.path.join(LEARNDATA_ROOT, sys_argv[1]))
                 if os.path.isfile(data_file_maybe):
                     learndata_file = data_file_maybe
                 else:
                     # try adding .txt at the end...
-                    logging.info(f"File {helpers.path_contract_user(data_file_maybe)} does not exist. Trying to add .txt at the end...")
+                    logging.info(T["appending_.txt"].format(helpers.path_contract_user(data_file_maybe)))
                     data_file_maybe += '.txt'
                     if os.path.isfile(data_file_maybe):
                         learndata_file = data_file_maybe
                     else:
                         # raise error and fall back to DATA_FILE
-                        logging.error(f"File {helpers.path_contract_user(data_file_maybe)} not found. \n       Falling back to {helpers.path_contract_user(DATA_FILE)}")
+                        logging.error(T["using_fallback_learndata"].format(
+                            file=helpers.path_contract_user(data_file_maybe),
+                            fallback=helpers.path_contract_user(DATA_FILE)
+                        ))
                         learndata_file = DATA_FILE
 
         # parse the flags and data from the text file
@@ -195,17 +202,13 @@ def main(sys_argv) -> int:
         # print loaded items count
         if flags.show_items_count:
             display_path = learndata_file.replace(LEARNDATA_ROOT, '').lstrip('\\').lstrip('/')
-            cprint(T['loaded_items'].format(
-                count=len(data),
-                o_count=full_data_count,
-                s='s' if len(data) != 1 else '',
-                file=display_path)
-            , 'green')
+            cprint(T['loaded_items'].format(count=len(data), o_count=full_data_count, s='s' if len(data) != 1 else '',
+                file=display_path), 'green')
 
         # choose testing or training mode
-        training_mode = ask.selection(T['choose_mode'], (T['testing'],T['training'])) == T['testing']
+        training_mode = ask.selection(T['choose_mode'], (T['testing'], T['training'])) == T['testing']
 
-        def main_loop(training_mode:bool, data, flags, no_recap:bool=False):
+        def main_loop(training_mode: bool, data, flags, no_recap: bool = False):
             if training_mode:
                 found, notfound = testing_loop(data, flags)
                 show_grade(found, data, flags)
@@ -231,4 +234,3 @@ def main(sys_argv) -> int:
     except KeyboardInterrupt:
         cprint("\n" + T['process_closed_by_user'], 'red')
         return 1
-
