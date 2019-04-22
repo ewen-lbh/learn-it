@@ -1,6 +1,7 @@
 import json
 import os
-
+from termcolor import colored as termcolor_colored
+import colorama
 
 def pprint_dict(data: dict, pad: int = 1, sep: str = ': ', column_names: tuple = None, return_str: bool = False):
     k_maxlen = max([len(str(e)) for e in data.keys()])
@@ -59,3 +60,11 @@ def get_translations(lang='en'):
         raw = f.read()
 
     return json.loads(raw)
+
+def colored(*args, **kwargs):
+    colorama.init()
+    return termcolor_colored(*args, **kwargs)
+
+
+def cprint(*args, **kwargs):
+    print(colored(*args, **kwargs))

@@ -1,4 +1,4 @@
-from termcolor import cprint
+from src.helpers import cprint
 
 from src.consts import *
 

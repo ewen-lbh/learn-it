@@ -2,7 +2,7 @@ import collections
 import logging
 import random
 
-from termcolor import cprint, colored
+from src.helpers import cprint, colored
 
 from src import ask, parser
 from src.consts import *
