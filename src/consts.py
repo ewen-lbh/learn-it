@@ -9,12 +9,12 @@ else:
     LEARNDATA_ROOT = '~/Documents/work/learndata'
 
 DATA_FILE = 'maths/suites.txt'
-LOG_LEVEL = 'WARNING'
+LOG_LEVEL = 'DEBUG'
 LANGUAGE = 'fr'
 
-PRESETS_FILE = 'presets.json'
 DEBUG = False
 AUTO_ANSWER = False
+ALWAYS_USE_DATA_FILE = False
 
 SYNTAX = {
     'flags'   : re.compile(r'--([\w][\w\-]*)(?:[ =](.+))?'),  # [0]: trues, [1]: falses
@@ -79,10 +79,9 @@ FLAGS_TYPES = {
     'blacklist'                  : list,
 }
 
-# Get real and absolute paths for DATA_FILE and PRESETS_FILE
+# Get real and absolute paths for DATA_FILE
 LEARNDATA_ROOT = os.path.normpath(os.path.expanduser(LEARNDATA_ROOT))
 DATA_FILE = os.path.abspath(os.path.join(LEARNDATA_ROOT, DATA_FILE))
-PRESETS_FILE = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), PRESETS_FILE))
 
 # available logging levels
 LOGGING_LEVELS = ["FATAL", "ERROR", "WARNING", "INFO", "DEBUG"]

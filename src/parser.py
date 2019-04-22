@@ -17,19 +17,12 @@ def parse_preset(lines) -> dict:
             if SYNTAX['flags'].search(line).group(1) == 'preset':
                 preset = SYNTAX['flags'].search(line).group(2)
 
-    if not os.path.isfile(PRESETS_FILE):
-        log.error('Presets file not found, ignoring preset')
-        return {}
-
     if preset is None:
         return {}
 
-    # get the presets file contents
-    presets_file_contents = open(PRESETS_FILE, 'r', encoding='utf8').read()
-    # get the flags and their values for the chosen preset
-    # if the specified preset doesn't exists, throw an error in the log
+    # get the presets
     try:
-        flags = json.loads(presets_file_contents)[preset]
+        flags = helpers.get_resource('presets')[preset]
     except KeyError:
         log.error(f'Unknown preset "{preset}", ignoring')
         return {}

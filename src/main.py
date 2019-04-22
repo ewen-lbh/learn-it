@@ -2,8 +2,9 @@ import collections
 import logging
 import random
 
-from termcolor import cprint, colored
-
+from src.helpers import cprint, colored
+import tkinter as tk
+from tkinter import filedialog
 from src import ask, parser
 from src.consts import *
 
@@ -144,10 +145,25 @@ def main(sys_argv) -> int:
         # the first sys.argv is "run.py", the hypothetical second item
         # is going to be the learndata file's path.
 
-        # check if any filepath was specified
+        # check if any filepath was specified...
+        # via GUI
         if len(sys_argv) < 2:
-            # fall back to DATA_FILE
-            learndata_file = DATA_FILE
+            if ALWAYS_USE_DATA_FILE:
+                learndata_file = DATA_FILE
+            else:
+                root = tk.Tk()
+                root.withdraw()
+                data_file_maybe = filedialog.askopenfilename()
+                if os.path.isfile(data_file_maybe):
+                    learndata_file = data_file_maybe
+                else:
+                    # fall back to DATA_FILE
+                    logging.error(T["using_fallback_learndata"].format(
+                        file=helpers.path_contract_user(data_file_maybe),
+                        fallback=helpers.path_contract_user(DATA_FILE)
+                    ))
+                    learndata_file = DATA_FILE
+        # or via command-line argument
         else:
             data_file_maybe = helpers.get_absolute_path(sys_argv[1])
             # check file existance

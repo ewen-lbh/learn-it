@@ -1,10 +1,10 @@
-from termcolor import cprint
+from src.helpers import cprint
 
 from src.consts import *
 
 
 def yesno(msg) -> bool:
-    return input('(y/n) ' + msg + '\n>').lower().strip().startswith(('y','ы','я'))
+    return input('(y/n) ' + msg + '\n>').lower().strip().startswith(('y', 'ы', 'я'))
 
 
 def get_ans(asked, answer, flags) -> bool:

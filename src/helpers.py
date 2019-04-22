@@ -1,5 +1,9 @@
 import json
+import logging
 import os
+import sys
+from termcolor import colored as termcolored
+import colorama
 
 
 def pprint_dict(data: dict, pad: int = 1, sep: str = ': ', column_names: tuple = None, return_str: bool = False):
@@ -52,10 +56,26 @@ def path_go_up(path: str, times: int = 1) -> str:
         path = os.path.dirname(path)
     return path
 
-
 def get_translations(lang='en'):
-    translations_dir = path_go_up(__file__, 2) + '/translations'
-    with open(os.path.abspath(f'{translations_dir}/{lang}.json'), 'r', encoding='utf8') as f:
-        raw = f.read()
+    if lang == 'en':
+        from translations.en import T
+    elif lang == 'fr':
+        from translations.fr import T
+    else:
+        logging.fatal(f'Unknown language "{lang}"')
+        sys.exit(0)
 
-    return json.loads(raw)
+    return T[lang]
+
+
+def get_resource(resource_name):
+    if resource_name == 'presets':
+        from src.presets import PRESETS
+        return PRESETS
+
+def colored(*args, **kwargs):
+    colorama.init()
+    return termcolored(*args, **kwargs)
+
+def cprint(*args, **kwargs):
+    print(colored(*args, **kwargs))

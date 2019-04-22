@@ -1,4 +1,5 @@
-{
+T = dict()
+T['fr'] = {
   "choose_mode": "Choisir un mode:\n<choices>",
   "loaded_items": "{count} de {o_count} \u00e9l\u00e9ment{s} charg\u00e9{s} depuis {file}",
   "correct_answer": "La r\u00e9ponse correcte \u00e9tait : {}",
