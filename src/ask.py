@@ -23,7 +23,7 @@ def get_ans(asked, answer, flags) -> bool:
     if ans == answer:
         return True
     else:
-        if flags.ask_for_typos and not AUTO_ANSWER:
+        if flags.ask_for_typos and not AUTO_ANSWER and ans:
             if yesno("Was this a typo ?"):
                 return get_ans(asked, answer, flags)
         return False
