@@ -15,6 +15,7 @@ LANGUAGE = 'fr'
 PRESETS_FILE = 'presets.json'
 DEBUG = False
 AUTO_ANSWER = False
+ALWAYS_USE_DATA_FILE = False
 
 SYNTAX = {
     'flags'   : re.compile(r'--([\w][\w\-]*)(?:[ =](.+))?'),  # [0]: trues, [1]: falses

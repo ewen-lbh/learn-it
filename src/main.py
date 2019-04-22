@@ -144,13 +144,12 @@ def main(sys_argv) -> int:
         # the first sys.argv is "run.py", the hypothetical second item
         # is going to be the learndata file's path.
 
-        # check if any filepath was specified
-        if len(sys_argv) < 2:
-            # fall back to DATA_FILE
-            learndata_file = DATA_FILE
-        else:
+        # check if any filepath was specified...
+        # via command-line argument
+        fallback = False
+        if len(sys_argv) >= 2:
             data_file_maybe = helpers.get_absolute_path(sys_argv[1])
-            # check file existance
+            # check file existence
             if os.path.isfile(data_file_maybe):
                 # set it as the learndata_file
                 learndata_file = data_file_maybe
@@ -170,12 +169,28 @@ def main(sys_argv) -> int:
                     if os.path.isfile(data_file_maybe):
                         learndata_file = data_file_maybe
                     else:
-                        # raise error and fall back to DATA_FILE
-                        logging.error(T["using_fallback_learndata"].format(
-                            file=helpers.path_contract_user(data_file_maybe),
-                            fallback=helpers.path_contract_user(DATA_FILE)
-                        ))
-                        learndata_file = DATA_FILE
+                        fallback = True
+        # or via GUI
+        if ALWAYS_USE_DATA_FILE:
+            learndata_file = DATA_FILE
+        else:
+            root = tk.Tk()
+            root.withdraw()
+            data_file_maybe = filedialog.askopenfilename()
+            if os.path.isfile(data_file_maybe):
+                learndata_file = data_file_maybe
+            else:
+                # fall back to DATA_FILE
+                fallback = True
+
+        if fallback:
+            # raise error and fall back to DATA_FILE
+            logging.error(T["using_fallback_learndata"].format(
+                file=helpers.path_contract_user(data_file_maybe),
+                fallback=helpers.path_contract_user(DATA_FILE)
+            ))
+            learndata_file = DATA_FILE
+            
 
         # parse the flags and data from the text file
         data, flags = parser.parse_file(learndata_file)
