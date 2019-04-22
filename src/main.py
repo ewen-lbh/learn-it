@@ -73,8 +73,10 @@ def show_grade(found, data: collections.OrderedDict, flags: parser.FlagsParser) 
     # if the calculated grade is higher or equal to that threshold, set the text to green
     # else set it to red
     color = 'green' if grade >= flags.grade_max * flags.good_grade else 'red'
+    # show % instead of "/100"
+    disp_grademax = '/'+str(flags.grade_max) if flags.grade_max != 100 else '%'
     # show values, with converted grade, and original grade (correctly answered / total number of learndata items)
-    cprint('Your grade: {}/{} ({}/{})'.format(grade, int(flags.grade_max), len(found), len(data)), color)
+    cprint('Your grade: {}{} ({}/{})'.format(grade, disp_grademax, len(found), len(data)), color)
     # returns the grade in case we want to use the value for further processing
     # todo if we ever need this, we should add a "no_print" argument to the function
     return grade
