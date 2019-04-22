@@ -85,7 +85,8 @@ Available flags:
 |preset|Use a [flags preset](#presets).|languages||
 |show-answer-in-testing-mode|In testing mode, show the correct answer when the provided answer was wrong. (This behavior is always active in training mode)|True, False|True  
 |show-items-count|Shows a message at the start that says: "Loaded *N* items from *FILE*"|True, False|True
-|show-remaining-items-count|After each question, shows the number of remaining items|True, False|False  
+|show-remaining-items-count|After each question, shows the number of remaining items|True, False|False
+|strict-learn-about|This only affects files with `--ask-for` set to `both`. Alters the way the list of elements shown in the recap (those you need to learn) is calculated. If this option is True, elements will be added to the test if you fail at least one time. If set to False, you need to fail in both tests in order to add the element.|True,False|True  
 |title|Will be used to display a header at the start of the script. If set to `untitled`, the header will not be displayed.|Chemistry test|untitled    
 |warn-unknown-flags|Shows a warning if some flags are declared but unknown|True, False|True  
 |whitelist|Use this to filter the things scanned, useful if you have a huge file and already know most of the things in it, but don't know about some other things|[a,comma,separated,list]|[]|    

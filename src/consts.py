@@ -43,9 +43,11 @@ FLAGS_DEFAULTS = {
     'grade-precision'            : 2,
     'header'                     : '---- <> ----',
     'header-color'               : 'cyan',
+    # todo rename to --show-answer
     'show-answer-in-testing-mode': True,
     'show-items-count'           : DEBUG,
     'show-remaining-items-count' : False,
+    'strict-learn-about'         : True,
     'title'                      : 'untitled',
     'warn-unknown-flags'         : True,
     'whitelist'                  : [],
@@ -76,6 +78,7 @@ FLAGS_TYPES = {
     'show-answer-in-testing-mode': bool,
     'show-items-count'           : bool,
     'show-remaining-items-count' : bool,
+    'strict-learn-about'         : bool,
     'title'                      : str,
     'warn-unknown-flags'         : bool,
     'whitelist'                  : list,
@@ -84,7 +87,10 @@ FLAGS_TYPES = {
 
 # Get real and absolute paths for DATA_FILE and PRESETS_FILE
 LEARNDATA_ROOT = os.path.normpath(os.path.expanduser(LEARNDATA_ROOT))
-DATA_FILE = os.path.abspath(os.path.join(LEARNDATA_ROOT, DATA_FILE))
+if DATA_FILE.startswith('<no_append_root>'):
+    DATA_FILE = os.path.abspath(os.path.expanduser(DATA_FILE.replace('<no_append_root>','',1)))
+else:
+    DATA_FILE = os.path.abspath(os.path.join(LEARNDATA_ROOT, DATA_FILE))
 PRESETS_FILE = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), PRESETS_FILE))
 
 # available logging levels

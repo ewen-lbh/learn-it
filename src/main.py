@@ -153,7 +153,8 @@ def auto_blacklist(to_blacklist: list, flags: parser.FlagsParser, learndata_file
     # removes duplicates in list
     blacklist = list(set(blacklist))
     # todo implement this better, if SYNTAX['list'] changes, this doesn't.
-    declaration_line = '--blacklist [' + ', '.join(blacklist) + ']'
+    declaration_line = '--blacklist ' + '[' + ', '.join(blacklist) + ']'
+    logging.info(T["adding_line_to_file"].format(line=declaration_line, file=learndata_file))
     # prepends the blacklist declaration to the lines
     newlines = [declaration_line] + newlines
     with open(learndata_file, 'w', encoding='utf8') as f:
@@ -254,6 +255,11 @@ def main(sys_argv) -> int:
         # print header
         header(flags)
 
+        # exit if loaded items count < 1
+        if len(data) < 1:
+            cprint(T['0_items_loaded'], 'red')
+            sys.exit(0)
+
         # print loaded items count
         if flags.show_items_count:
             display_path = learndata_file.replace(LEARNDATA_ROOT, '').lstrip('\\').lstrip('/')
@@ -267,7 +273,7 @@ def main(sys_argv) -> int:
             testing_mode = True
 
 
-        def main_loop(testing_mode: bool, data, flags, no_recap: bool = False):
+        def main_loop(testing_mode: bool, data, flags):
             if testing_mode:
                 found, notfound = testing_loop(data, flags)
                 show_grade(found, data, flags)
@@ -276,19 +282,32 @@ def main(sys_argv) -> int:
                 notfound = list()
                 train_loop(data, flags)
 
-            if len(notfound) and not no_recap:
-                recap(collections.OrderedDict({k:v for k, v in data.items() if k in notfound}))
-                if flags.auto_blacklist:
-                    auto_blacklist(data, flags)
+            return notfound
 
-        # if we ask for keys AND values, execute main_loop (without showing a recap, it would give away the answers),
-        # invert the dict's mapping and execute main_loop again.
+        # if we ask for keys AND values, execute main_loop,
+        # & execute main_loop again with inverted dict mapping, and then show recap
         if flags.ask_for == 'both':
-            main_loop(testing_mode, data, flags, no_recap=True)
-            data = helpers.invert_dict_mapping(data)
-            main_loop(testing_mode, data, flags)
+            v_notfound = main_loop(testing_mode, data, flags)
+            k_notfound = main_loop(testing_mode, helpers.invert_dict_mapping(data), flags)
+            # invert back dict mapping
+            k_notfound = [k for v,k in data.items() if v in k_notfound]
+            if flags.strict_learn_about:
+                notfound = list(set(v_notfound + k_notfound))
+            else:
+                notfound = [e for e in k_notfound + v_notfound if e in k_notfound and e in v_notfound]
+                notfound = list(set(notfound))
         else:
-            main_loop(testing_mode, data, flags)
+            notfound = main_loop(testing_mode, data, flags)
+
+        notfound_data = collections.OrderedDict({k:v for k, v in data.items() if k in notfound})
+        found = [e for e in data.keys() if e not in notfound]
+
+        if len(notfound):
+            recap(notfound_data)
+
+        if flags.auto_blacklist:
+            auto_blacklist(found, flags, learndata_file)
+
 
     except KeyboardInterrupt:
         cprint("\n" + T['process_closed_by_user'], 'red')

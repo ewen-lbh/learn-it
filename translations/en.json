@@ -13,5 +13,7 @@
   "assuming_learndata_root": "File {file} does not exist. Assuming that it's located in {directory}...",
   "appending_.txt": "File {} does not exist. Trying to add .txt at the end...",
   "using_fallback_learndata": "File {file} not found. \n       Falling back to {fallback}",
-  "remaining_items_count": "{n} to go !"
+  "remaining_items_count": "{n} to go !",
+  "adding_line_to_file": "Adding {line} to {file}",
+  "0_items_loaded": "No items to load ! Maybe your blacklist contains all the file's items ?"
 }
