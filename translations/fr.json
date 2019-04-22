@@ -12,5 +12,6 @@
   "training": "Entraînement",
   "assuming_learndata_root": "Le fichier {file} n'existe pas. Essai en prenant {directory} comme chemin de répertoire...",
   "appending_.txt": "Le fichier {} n'existe pas. Essai en ajoutant \".txt\" à la fin...",
-  "using_fallback_learndata": "Le fichier {file} n'existe pas. \n       Utilisation de {fallback} à la place..."
+  "using_fallback_learndata": "Le fichier {file} n'existe pas. \n       Utilisation de {fallback} à la place...",
+  "remaining_items_count": "Encore {n} élément{s}"
 }

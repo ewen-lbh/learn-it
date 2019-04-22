@@ -26,11 +26,15 @@ def train_loop(data: collections.OrderedDict, flags: parser.FlagsParser) -> None
         else:
             cprint(T['correct_answer'].format(answer), 'red')
 
+        if flags.show_remaining_items_count:
+            cprint(T['remaining_items_count'].format(n=len(data) - len(found), s='s' if len(data) - len(found) != 1 else ''))
+
 
 def testing_loop(data: collections.OrderedDict, flags: parser.FlagsParser) -> tuple:
-    # init lists
+    # init lists & idx
     found = list()
     notfound = list()
+    loop_idx = 0
     # for each learndata item
     for asked, answer in data.items():
         # if we found the correct answer
@@ -53,6 +57,11 @@ def testing_loop(data: collections.OrderedDict, flags: parser.FlagsParser) -> tu
         # if --always-show-grade allows it, calculate and print the grade after each answer
         if flags.always_show_grade:
             show_grade(found, data, flags)
+
+        if flags.show_remaining_items_count:
+            print(T['remaining_items_count'].format(n=len(data) - loop_idx, s='s' if len(data) - loop_idx != 1 else ''))
+
+        loop_idx += 1
     return found, notfound
 
 
