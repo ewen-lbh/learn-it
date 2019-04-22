@@ -256,7 +256,7 @@ def main(sys_argv) -> int:
                 train_loop(data, flags)
 
             if len(notfound) and not no_recap:
-                recap(data)
+                recap(collections.OrderedDict({k:v for k, v in data.items() if k in notfound}))
                 if flags.auto_blacklist:
                     auto_blacklist(data, flags)
 
