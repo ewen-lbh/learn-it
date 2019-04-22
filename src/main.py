@@ -1,11 +1,12 @@
 import collections
 import logging
 import random
-
-from src.helpers import cprint, colored
+import tkinter as tk
+from tkinter import filedialog
 
 from src import ask, parser
 from src.consts import *
+from src.helpers import cprint, colored
 
 
 def train_loop(data: collections.OrderedDict, flags: parser.FlagsParser) -> None:
@@ -155,10 +156,8 @@ def main(sys_argv) -> int:
                 learndata_file = data_file_maybe
             else:
                 # try changing the dir for the filepath with LEARNDATA_ROOT...
-                logging.info(T['assuming_learndata_root'].format(
-                    file=helpers.path_contract_user(data_file_maybe),
-                    directory=helpers.path_contract_user(LEARNDATA_ROOT)
-                ))
+                logging.info(T['assuming_learndata_root'].format(file=helpers.path_contract_user(data_file_maybe),
+                    directory=helpers.path_contract_user(LEARNDATA_ROOT)))
                 data_file_maybe = os.path.abspath(os.path.join(LEARNDATA_ROOT, sys_argv[1]))
                 if os.path.isfile(data_file_maybe):
                     learndata_file = data_file_maybe
@@ -185,12 +184,9 @@ def main(sys_argv) -> int:
 
         if fallback:
             # raise error and fall back to DATA_FILE
-            logging.error(T["using_fallback_learndata"].format(
-                file=helpers.path_contract_user(data_file_maybe),
-                fallback=helpers.path_contract_user(DATA_FILE)
-            ))
+            logging.error(T["using_fallback_learndata"].format(file=helpers.path_contract_user(data_file_maybe),
+                fallback=helpers.path_contract_user(DATA_FILE)))
             learndata_file = DATA_FILE
-            
 
         # parse the flags and data from the text file
         data, flags = parser.parse_file(learndata_file)
@@ -218,7 +214,7 @@ def main(sys_argv) -> int:
         if flags.show_items_count:
             display_path = learndata_file.replace(LEARNDATA_ROOT, '').lstrip('\\').lstrip('/')
             cprint(T['loaded_items'].format(count=len(data), o_count=full_data_count, s='s' if len(data) != 1 else '',
-                file=display_path), 'green')
+                                            file=display_path), 'green')
 
         # choose testing or training mode
         training_mode = ask.selection(T['choose_mode'], (T['testing'], T['training'])) == T['testing']
