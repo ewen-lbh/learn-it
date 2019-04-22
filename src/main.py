@@ -273,7 +273,7 @@ def main(sys_argv) -> int:
             testing_mode = True
 
 
-        def main_loop(testing_mode: bool, data, flags):
+        def main_loop(testing_mode: bool, data, flags) -> list:
             if testing_mode:
                 found, notfound = testing_loop(data, flags)
                 show_grade(found, data, flags)
@@ -290,7 +290,7 @@ def main(sys_argv) -> int:
             v_notfound = main_loop(testing_mode, data, flags)
             k_notfound = main_loop(testing_mode, helpers.invert_dict_mapping(data), flags)
             # invert back dict mapping
-            k_notfound = [k for v,k in data.items() if v in k_notfound]
+            k_notfound = [k for k, v in data.items() if v in k_notfound]
             if flags.strict_learn_about:
                 notfound = list(set(v_notfound + k_notfound))
             else:
@@ -299,7 +299,8 @@ def main(sys_argv) -> int:
         else:
             notfound = main_loop(testing_mode, data, flags)
 
-        notfound_data = collections.OrderedDict({k:v for k, v in data.items() if k in notfound})
+        notfound_data = {k:v for k, v in data.items() if k in notfound}
+        notfound_data = collections.OrderedDict(**notfound_data)
         found = [e for e in data.keys() if e not in notfound]
 
         if len(notfound):
