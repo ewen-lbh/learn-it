@@ -174,10 +174,13 @@ def main(sys_argv) -> int:
         # the first sys.argv is "run.py", the hypothetical second item
         # is going to be the learndata file's path.
 
-        # check if any filepath was specified...
-        # via command-line argument
         fallback = False
-        if len(sys_argv) >= 2:
+        # check if any filepath was specified...
+        if ALWAYS_USE_DATA_FILE:
+            learndata_file = DATA_FILE
+
+        # via command-line argument
+        elif len(sys_argv) >= 2:
             data_file_maybe = helpers.get_absolute_path(sys_argv[1])
             # check file existence
             if os.path.isfile(data_file_maybe):
@@ -199,12 +202,13 @@ def main(sys_argv) -> int:
                     else:
                         fallback = True
         # or via GUI
-        if ALWAYS_USE_DATA_FILE:
-            learndata_file = DATA_FILE
         else:
             root = tk.Tk()
             root.withdraw()
             data_file_maybe = filedialog.askopenfilename()
+            if not data_file_maybe:
+                cprint("You did not select a file!",'red')
+                sys.exit(0)
             if os.path.isfile(data_file_maybe):
                 learndata_file = data_file_maybe
             else:
@@ -246,10 +250,14 @@ def main(sys_argv) -> int:
                                             file=display_path), 'green')
 
         # choose testing or training mode
-        training_mode = ask.selection(T['choose_mode'], (T['testing'], T['training'])) == T['testing']
+        if not AUTO_ANSWER:
+            testing_mode = ask.selection(T['choose_mode'], (T['testing'], T['training'])) == T['testing']
+        else:
+            testing_mode = True
 
-        def main_loop(training_mode: bool, data, flags, no_recap: bool = False):
-            if training_mode:
+
+        def main_loop(testing_mode: bool, data, flags, no_recap: bool = False):
+            if testing_mode:
                 found, notfound = testing_loop(data, flags)
                 show_grade(found, data, flags)
             else:
@@ -265,11 +273,11 @@ def main(sys_argv) -> int:
         # if we ask for keys AND values, execute main_loop (without showing a recap, it would give away the answers),
         # invert the dict's mapping and execute main_loop again.
         if flags.ask_for == 'both':
-            main_loop(training_mode, data, flags, no_recap=True)
+            main_loop(testing_mode, data, flags, no_recap=True)
             data = helpers.invert_dict_mapping(data)
-            main_loop(training_mode, data, flags)
+            main_loop(testing_mode, data, flags)
         else:
-            main_loop(training_mode, data, flags)
+            main_loop(testing_mode, data, flags)
 
     except KeyboardInterrupt:
         cprint("\n" + T['process_closed_by_user'], 'red')
