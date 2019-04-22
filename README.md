@@ -1,8 +1,43 @@
 # LEARN_IT!
 A script that helps you learn stuff.  
 
-**IMPORTANT NOTICE**: This is still an early work-in-progress project, and the only working version is contained in the `main.old.py` file. Most of the features shown here will not work, though the basics (modes and learndata files) will work.    
+# Installation
+## Windows
+ - Install [python](https://python.org/download) (version 3.6 or higher)
+ - Download this repository ("Clone or download" button > "Download ZIP")
+ - Extract `learn-it-master` to a folder, go in that folder
+ - Open a command prompt: Right-Click while holding `Shift`, and select "Open terminal here".
+ - Check if pip is installed: `py -m pip3 --version`
+ - Install required packages with `py -m pip3 install -r requirements.txt`
+ - Finally, run the program with `py run.py`
+ - The program will open a file selection dialog, select your learndata file and click `Open`
 
+## Linux
+ - (1) Install required programs: `sudo apt install python python3 python3-pip git`
+ - (2) Clone the repo: `git clone https://github.com/ewen-lbh/learn-it`
+ - (3) Navigate to the repo: `cd learn-it`
+ - (4) Install dependencies: `pip3 install -r requirements.txt`
+ - (5) Run the script: `python3 run.py`
+
+## macOS
+ - Install [python](https://python.org/download) (version 3.6 or higher)
+ - Open your terminal (press the launchpad button, type "terminal" & press enter)
+ - Install git Type `git`, press Enter and accept
+ - Do Linux's instructions from step 2 through 5
+
+## Android
+ - Install [Termux](https://play.google.com/store/apps/details?id=com.termux)
+ - Open the app
+ - Install required programs: `apt install git` (python and pip are pre-installed with Termux)
+ - Do Linux's instructions from step 2 trough 4
+ - Give Termux access to your downloads folder: `termux-setup-storage`
+ - Put your learndata file in `Download` (on your phone's internal storage, not on your SD Card)
+ - Run `python3 run.py Downloads/file.txt` (where `file.txt` is the name of your learndata file)
+
+## iOS
+ - Ahaha no. Get a real phone
+
+> If you've set `LEARNDATA_ROOT` and that your file is located here, you can specify the path directly: `py run.py russian/vocabulary` (if you have a file "vocabulary.txt" situated in LEARNDATA_ROOT/russian)
 
 # "learndata" files  
   
