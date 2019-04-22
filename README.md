@@ -22,7 +22,7 @@ A script that helps you learn stuff.
 ## macOS
  - Install [python](https://python.org/download) (version 3.6 or higher)
  - Open your terminal (press the launchpad button, type "terminal" & press enter)
- - Install git Type `git`, press Enter and accept
+ - Install git (Type `git`, press Enter and accept)
  - Do Linux's instructions from step 2 through 5
 
 ## Android
