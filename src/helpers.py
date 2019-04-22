@@ -68,3 +68,9 @@ def colored(*args, **kwargs):
 
 def cprint(*args, **kwargs):
     print(colored(*args, **kwargs))
+
+
+def colprint(lines:list,pad:int=2):
+    col_width = max(len(word) for row in lines for word in row) + pad  # padding
+    for row in lines:
+        print("".join(word.ljust(col_width) for word in row))

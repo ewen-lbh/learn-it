@@ -72,7 +72,34 @@ def show_grade(found, data: collections.OrderedDict, flags: parser.FlagsParser) 
 def recap(data: collections.OrderedDict) -> None:
     cprint("You need to learn about:", 'red')
     # prints nicely the items provided
-    helpers.pprint_dict(data)
+    lines = helpers.pprint_dict(data, return_str=True).split('\n')
+    lines = [e.strip() for e in lines]
+    # function to determinate if the terminal is big enough to show N lines
+    has_enough_space_for = lambda n:shutil.get_terminal_size().columns >= maxlinelen * n
+    # get maximum length of one line
+    maxlinelen = max([len(e) for e in lines]) + 2  # padding
+    # determine number of columns based on number of lines
+    if len(lines) >= 16:
+        cols = 4
+    elif len(lines) >= 8:
+        cols = 2
+    else:
+        cols = 1
+
+    while not has_enough_space_for(cols):
+        cols -= 1
+    if cols < 1: cols = 1
+
+    columns = list()
+    col_idx = -1
+    for i, line in enumerate(lines):
+        if i % cols == 0:
+            columns.append([line])
+            col_idx += 1
+        else:
+            columns[col_idx].append(line)
+
+    helpers.colprint(columns, pad=2)
 
 
 def header(flags: parser.FlagsParser, custom_text: str = None):
