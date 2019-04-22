@@ -1,7 +1,9 @@
 import json
 import os
-from termcolor import colored as termcolor_colored
+
 import colorama
+from termcolor import colored as termcolor_colored
+
 
 def pprint_dict(data: dict, pad: int = 1, sep: str = ': ', column_names: tuple = None, return_str: bool = False):
     k_maxlen = max([len(str(e)) for e in data.keys()])
@@ -61,6 +63,7 @@ def get_translations(lang='en'):
 
     return json.loads(raw)
 
+
 def colored(*args, **kwargs):
     colorama.init()
     return termcolor_colored(*args, **kwargs)
@@ -70,7 +73,8 @@ def cprint(*args, **kwargs):
     print(colored(*args, **kwargs))
 
 
-def colprint(lines:list,pad:int=2):
+def colprint(lines: list, pad: int = 2):
     col_width = max(len(word) for row in lines for word in row) + pad  # padding
-    for row in lines:
-        print("".join(word.ljust(col_width) for word in row))
+    for i, row in enumerate(lines):
+        color = 'white' if i % 2 == 0 else 'cyan'
+        cprint("".join(word.ljust(col_width) for word in row), color)
