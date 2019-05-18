@@ -12,7 +12,7 @@ def yesno(msg) -> bool:
 def get_ans(asked, answer, flags) -> bool:
     def ask(asked):
         sentence = flags.ask_sentence.replace('<>', asked)
-        return input(sentence + '\n>\t') if not AUTO_ANSWER else ''
+        return input(sentence + '\n> ') if not AUTO_ANSWER else ''
 
     # ans is the *user's* answer
     # answer is the *correct* answer
