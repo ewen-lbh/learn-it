@@ -3,6 +3,9 @@
     "ask-order": "random",
     "ask-for": "both",
     "show-items-count": "yes",
-    "ask-sentence": "How do you say <> ?"
+    "ask-sentence": "↘ <>",
+    "clear-screen": true,
+    "clear-mode": "confirm",
+    "read-time": 0.75
   }
 }

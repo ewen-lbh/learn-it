@@ -76,6 +76,8 @@ Available flags:
 |auto-blacklist|Use this to automatically add known words to the learndata file's `--blacklist`.|True, False|False
 |blacklist|Like whitelist, except it prevents specified items from being asked. Useful if you already know some items in the learndata|[spam, eggs]|[]    
 |case-sensitive|Take case into account when comparing answers|True, False|False
+|clear-mode|Either `confirm`: Press `Enter` to move to next word, or `delay`: Automatically move to next word after some time.|confirm, delay|confirm
+|clear-screen|Clears the screen after each response. If set to `False`, each answer will be separated by newlines.|on, delay, off|True
 |debug|Sets the debug mode. |True, False|False    
 |good-grade|Grades greater or equal to this will be shown green, while others will be shown red. The good-grade value is calculated by multiplying it by the max-grade value.|0.75|0.5    
 |grade-max|Indicate the divisor (maximum grade) used in *testing mode*.|20|100    
@@ -83,6 +85,7 @@ Available flags:
 |header-color|The header's color. Avaible colors: grey, red, green, yellow, blue, magenta, cyan, white|red|cyan  
 |header|Text shown at the beginning of the script. `<>` is replaced with `--title`'s value|<>|\-\-\- <> \-\-\-|  
 |preset|Use a [flags preset](#presets).|languages||
+|read-time|Time to read a letter, in seconds. Used to determinate delay before clearing the screen when the answer was wrong.|0.5|0.25
 |show-answer-in-testing-mode|In testing mode, show the correct answer when the provided answer was wrong. (This behavior is always active in training mode)|True, False|True  
 |show-items-count|Shows a message at the start that says: "Loaded *N* items from *FILE*"|True, False|True
 |show-remaining-items-count|After each question, shows the number of remaining items|True, False|False

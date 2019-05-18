@@ -15,16 +15,24 @@ def train_loop(data: collections.OrderedDict, flags: parser.FlagsParser) -> None
     found = list()
     # if we still have stuff not found
     while len(found) < len(data.keys()):
-        # randomly pick a question, and get its corresponding answer
-        asked = random.choice(list(data.keys()))
+        # randomly pick a question, and get its corresponding answer,
+        # among the questions that weren't found.
+        asked = random.choice([key for key in data.keys() if key not in found])
         answer = data[asked]
         # if the user replied correctly
-        if ask.get_ans(asked, answer, flags):
+        bFound = ask.get_ans(asked, answer, flags)
+
+        helpers.delete_prev_line()
+
+        if bFound:
             # add the question to found
             found.append(asked)
             cprint(T['correct'], "green")
         else:
             cprint(T['correct_answer'].format(answer), 'red')
+
+        # mark the end of this question (depends on --clear-screen)
+        ask.question_end(flags, found=bFound, asked=asked)
 
         if flags.show_remaining_items_count:
             cprint(T['remaining_items_count'].format(n=len(data) - len(found), s='s' if len(data) - len(found) != 1 else ''))
@@ -38,7 +46,11 @@ def testing_loop(data: collections.OrderedDict, flags: parser.FlagsParser) -> tu
     # for each learndata item
     for asked, answer in data.items():
         # if we found the correct answer
-        if ask.get_ans(asked, answer, flags):
+        bFound = ask.get_ans(asked, answer, flags)
+
+        helpers.delete_prev_line()
+
+        if bFound:
             # displays the message
             cprint(T['correct'], "green")
             # adds the question to found list
@@ -53,6 +65,9 @@ def testing_loop(data: collections.OrderedDict, flags: parser.FlagsParser) -> tu
                 cprint(T['wrong'], 'red')
             # adds the question to notfound list
             notfound.append(asked)
+
+        # mark the end of this question (depends on --clear-screen)
+        ask.question_end(flags, found=bFound, asked=asked)
 
         # if --always-show-grade allows it, calculate and print the grade after each answer
         if flags.always_show_grade:
@@ -163,6 +178,8 @@ def auto_blacklist(to_blacklist: list, flags: parser.FlagsParser, learndata_file
 
 def main(sys_argv) -> int:
     try:
+        # clear the screen
+        os.system('clear')
         # ---logging config---
         # we need to get level and debug flags before anything else because
         # flag parsing can output logs, and we need to decide whether we want
@@ -220,7 +237,7 @@ def main(sys_argv) -> int:
             data_file_maybe = filedialog.askopenfilename()
             if not data_file_maybe:
                 cprint("You did not select a file!",'red')
-                sys.exit(0)
+                sys.exit(1)
             if os.path.isfile(data_file_maybe):
                 learndata_file = data_file_maybe
             else:

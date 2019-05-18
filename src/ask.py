@@ -1,16 +1,18 @@
-from src.helpers import cprint
+import time
 
+from src.helpers import cprint
 from src.consts import *
+from src import helpers_post_init
 
 
 def yesno(msg) -> bool:
-    return input('(y/n) ' + msg + '\n>').lower().strip().startswith(('y','ы','я'))
+    return input('(y/n) ' + msg + '\n> ').lower().strip().startswith(('y','ы','я','у'))
 
 
 def get_ans(asked, answer, flags) -> bool:
     def ask(asked):
         sentence = flags.ask_sentence.replace('<>', asked)
-        return input(sentence + '\n>') if not AUTO_ANSWER else ''
+        return input(sentence + '\n>\t') if not AUTO_ANSWER else ''
 
     # ans is the *user's* answer
     # answer is the *correct* answer
@@ -28,6 +30,23 @@ def get_ans(asked, answer, flags) -> bool:
                 return get_ans(asked, answer, flags)
         return False
 
+
+def question_end(flags, found, asked):
+    if found:
+        wait = False
+        predelay = 0.5
+        delay = 0
+    else:
+        wait = True
+        predelay = 0
+        delay = helpers_post_init.get_reading_time(asked, time_to_read_letter=flags.read_time)
+
+    if flags.clear_screen:
+        time.sleep(predelay)
+        helpers_post_init.clear_screen(wait=wait, mode=flags.clear_mode, delay=delay)
+    else:
+        print('')
+        print('-' * 16)
 
 def selection(msg: str, choices: list or tuple, shortcuts=True, shortcuts_level: int = 1) -> str:
     """
@@ -72,7 +91,7 @@ def selection(msg: str, choices: list or tuple, shortcuts=True, shortcuts_level:
         else:
             choicelist.append('[{}]{}'.format(shortcut.upper(), choice[len(shortcut):]))
 
-    msg = msg.replace('<choices>', '\n'.join(choicelist)) + '\n>'
+    msg = msg.replace('<choices>', '\n'.join(choicelist)) + '\n> '
     # }
 
     ans = input(msg).strip().lower()

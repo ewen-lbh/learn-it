@@ -1,5 +1,7 @@
 import json
 import os
+import sys
+import time
 
 import colorama
 from termcolor import colored as termcolor_colored
@@ -69,8 +71,8 @@ def colored(*args, **kwargs):
     return termcolor_colored(*args, **kwargs)
 
 
-def cprint(*args, **kwargs):
-    print(colored(*args, **kwargs))
+def cprint(*args, end='\n', **kwargs):
+    print(colored(*args, **kwargs), end=end)
 
 
 def colprint(lines: list, pad: int = 2):
@@ -78,3 +80,7 @@ def colprint(lines: list, pad: int = 2):
     for i, row in enumerate(lines):
         color = 'white' if i % 2 == 0 else 'cyan'
         cprint("".join(word.ljust(col_width) for word in row), color)
+
+def delete_prev_line():
+    sys.stdout.write("\033[F")  # back to previous line
+    sys.stdout.write("\033[K")  # clear line

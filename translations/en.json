@@ -1,9 +1,9 @@
 {
   "choose_mode": "Choose a mode:\n<choices>",
   "loaded_items": "Loaded {count} of {o_count} item{s} from {file}",
-  "correct_answer": "The correct answer was: {}",
+  "correct_answer": "✖\t{}",
   "wrong": "Wrong!",
-  "correct": "Correct!",
+  "correct": "✓\tCorrect!",
   "process_closed_by_user": "Process closed by user",
   "unknown_flag": "Unknown flag \"{}\", ignoring.",
   "illegal_flag_value": "Illegal value \"{val}\" for flag --{flag}, ignoring.\n         Accepted values are:{legal_vals_type}",
@@ -15,5 +15,6 @@
   "using_fallback_learndata": "File {file} not found. \n       Falling back to {fallback}",
   "remaining_items_count": "{n} to go !",
   "adding_line_to_file": "Adding {line} to {file}",
-  "0_items_loaded": "No items to load ! Maybe your blacklist contains all the file's items ?"
+  "0_items_loaded": "No items to load ! Maybe your blacklist contains all the file's items ?",
+  "press_enter_to_continue": "Press <Enter> to continue..."
 }

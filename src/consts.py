@@ -8,7 +8,7 @@ if os.name == 'nt':
 else:
     LEARNDATA_ROOT = '~/Documents/work/learndata'
 
-DATA_FILE = 'maths/suites.txt'
+DATA_FILE = str()
 LOG_LEVEL = 'WARNING'
 LANGUAGE = 'fr'
 
@@ -16,6 +16,9 @@ PRESETS_FILE = 'presets.json'
 DEBUG = False
 AUTO_ANSWER = False
 ALWAYS_USE_DATA_FILE = False
+
+# time to read a letter, in seconds (used to calculate delay when answer is wrong and --clear-screen = 'delay')
+TIME_TO_READ_LETTER = 0.25
 
 SYNTAX = {
     'flags'   : re.compile(r'--([\w][\w\-]*)(?:[ =](.+))?'),  # [0]: trues, [1]: falses
@@ -37,13 +40,15 @@ FLAGS_DEFAULTS = {
     'ask-sentence'               : '<>',
     'auto-blacklist'             : False,
     'case-sensitive'             : False,
+    'clear-mode'                 : 'delay',
+    'clear-screen'               : 'off',
     'debug'                      : DEBUG,
     'good-grade'                 : 0.5,
     'grade-max'                  : 100,
     'grade-precision'            : 2,
     'header'                     : '---- <> ----',
     'header-color'               : 'cyan',
-    # todo rename to --show-answer
+    'read-time'                  : 0.25, # todo rename to --show-answer
     'show-answer-in-testing-mode': True,
     'show-items-count'           : DEBUG,
     'show-remaining-items-count' : False,
@@ -69,12 +74,15 @@ FLAGS_TYPES = {
     'ask-sentence'               : str,
     'auto-blacklist'             : bool,
     'case-sensitive'             : bool,
+    'clear-mode'                 : ('confirm', 'delay'),
+    'clear-screen'               : (True, 'delay', False),
     'debug'                      : bool,
     'good-grade'                 : float,
     'grade-max'                  : int,
     'grade-precision'            : int,
     'header'                     : str,
     'header-color'               : ('white', 'red', 'yellow', 'green', 'cyan', 'blue', 'magenta'),
+    'read-time'                  : float,
     'show-answer-in-testing-mode': bool,
     'show-items-count'           : bool,
     'show-remaining-items-count' : bool,
@@ -88,7 +96,7 @@ FLAGS_TYPES = {
 # Get real and absolute paths for DATA_FILE and PRESETS_FILE
 LEARNDATA_ROOT = os.path.normpath(os.path.expanduser(LEARNDATA_ROOT))
 if DATA_FILE.startswith('<no_append_root>'):
-    DATA_FILE = os.path.abspath(os.path.expanduser(DATA_FILE.replace('<no_append_root>','',1)))
+    DATA_FILE = os.path.abspath(os.path.expanduser(DATA_FILE.replace('<no_append_root>', '', 1)))
 else:
     DATA_FILE = os.path.abspath(os.path.join(LEARNDATA_ROOT, DATA_FILE))
 PRESETS_FILE = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), PRESETS_FILE))
