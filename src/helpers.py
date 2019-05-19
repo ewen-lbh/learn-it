@@ -2,6 +2,7 @@ import json
 import os
 import sys
 import time
+import shutil
 
 import colorama
 from termcolor import colored as termcolor_colored
@@ -84,3 +85,7 @@ def colprint(lines: list, pad: int = 2):
 def delete_prev_line():
     sys.stdout.write("\033[F")  # back to previous line
     sys.stdout.write("\033[K")  # clear line
+
+
+def term_size():
+    return shutil.get_terminal_size()

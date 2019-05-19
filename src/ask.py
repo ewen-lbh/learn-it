@@ -1,13 +1,13 @@
+import shutil
 import time
 
-from src.helpers import cprint
+from src.helpers import cprint, term_size
 from src.consts import *
 from src import helpers_post_init
 
 
 def yesno(msg) -> bool:
     return input('(y/n) ' + msg + '\n> ').lower().strip().startswith(('y','ы','я','у'))
-
 
 def get_ans(asked, answer, flags) -> bool:
     def ask(asked):

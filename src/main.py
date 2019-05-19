@@ -8,7 +8,7 @@ from tkinter import filedialog
 
 from src import ask, parser
 from src.consts import *
-from src.helpers import cprint, colored
+from src.helpers import cprint, colored, term_size
 
 
 def train_loop(data: collections.OrderedDict, flags: parser.FlagsParser) -> None:
@@ -19,6 +19,15 @@ def train_loop(data: collections.OrderedDict, flags: parser.FlagsParser) -> None
         # among the questions that weren't found.
         asked = random.choice([key for key in data.keys() if key not in found])
         answer = data[asked]
+
+        # print centered title if screen is cleared each time
+        if flags.clear_screen:
+            print('LEARN_IT! by Mx3'.center(term_size().columns))
+            print('-' * term_size().columns)
+
+        if flags.show_remaining_items_count:
+            cprint(T['remaining_items_count'].format(n=len(data) - len(found), s='s' if len(data) - len(found) != 1 else ''))
+        
         # if the user replied correctly
         bFound = ask.get_ans(asked, answer, flags)
 
@@ -34,9 +43,6 @@ def train_loop(data: collections.OrderedDict, flags: parser.FlagsParser) -> None
         # mark the end of this question (depends on --clear-screen)
         ask.question_end(flags, found=bFound, asked=asked)
 
-        if flags.show_remaining_items_count:
-            cprint(T['remaining_items_count'].format(n=len(data) - len(found), s='s' if len(data) - len(found) != 1 else ''))
-
 
 def testing_loop(data: collections.OrderedDict, flags: parser.FlagsParser) -> tuple:
     # init lists & idx
@@ -45,6 +51,18 @@ def testing_loop(data: collections.OrderedDict, flags: parser.FlagsParser) -> tu
     loop_idx = 0
     # for each learndata item
     for asked, answer in data.items():
+        # print centered title if screen is cleared each time
+        if flags.clear_screen:
+            print('LEARN_IT! by Mx3'.center(term_size().columns))
+            print('-' * term_size().columns)
+
+        # if --always-show-grade allows it, calculate and print the grade after each answer
+        if flags.always_show_grade:
+            show_grade(found, data, flags)
+
+        if flags.show_remaining_items_count:
+            cprint(T['remaining_items_count'].format(n=len(data) - len(found), s='s' if len(data) - len(found) != 1 else ''))
+
         # if we found the correct answer
         bFound = ask.get_ans(asked, answer, flags)
 
@@ -68,13 +86,6 @@ def testing_loop(data: collections.OrderedDict, flags: parser.FlagsParser) -> tu
 
         # mark the end of this question (depends on --clear-screen)
         ask.question_end(flags, found=bFound, asked=asked)
-
-        # if --always-show-grade allows it, calculate and print the grade after each answer
-        if flags.always_show_grade:
-            show_grade(found, data, flags)
-
-        if flags.show_remaining_items_count:
-            print(T['remaining_items_count'].format(n=len(data) - loop_idx, s='s' if len(data) - loop_idx != 1 else ''))
 
         loop_idx += 1
     return found, notfound
@@ -176,10 +187,8 @@ def auto_blacklist(to_blacklist: list, flags: parser.FlagsParser, learndata_file
         f.write('\n'.join(newlines))
 
 
-def main(sys_argv) -> int:
+def main(flags) -> int:
     try:
-        # clear the screen
-        os.system('clear')
         # ---logging config---
         # we need to get level and debug flags before anything else because
         # flag parsing can output logs, and we need to decide whether we want
@@ -209,8 +218,8 @@ def main(sys_argv) -> int:
             learndata_file = DATA_FILE
 
         # via command-line argument
-        elif len(sys_argv) >= 2:
-            data_file_maybe = helpers.get_absolute_path(sys_argv[1])
+        elif flags.file is not None:
+            data_file_maybe = helpers.get_absolute_path(flags.file)
             # check file existence
             if os.path.isfile(data_file_maybe):
                 # set it as the learndata_file
@@ -219,7 +228,7 @@ def main(sys_argv) -> int:
                 # try changing the dir for the filepath with LEARNDATA_ROOT...
                 logging.info(T['assuming_learndata_root'].format(file=helpers.path_contract_user(data_file_maybe),
                     directory=helpers.path_contract_user(LEARNDATA_ROOT)))
-                data_file_maybe = os.path.abspath(os.path.join(LEARNDATA_ROOT, sys_argv[1]))
+                data_file_maybe = os.path.abspath(os.path.join(LEARNDATA_ROOT, flags.file))
                 if os.path.isfile(data_file_maybe):
                     learndata_file = data_file_maybe
                 else:
@@ -300,6 +309,11 @@ def main(sys_argv) -> int:
                 train_loop(data, flags)
 
             return notfound
+
+        # let's start!
+        
+        # clear the screen
+        os.system('clear')
 
         # if we ask for keys AND values, execute main_loop,
         # & execute main_loop again with inverted dict mapping, and then show recap

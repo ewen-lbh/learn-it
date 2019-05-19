@@ -2,6 +2,7 @@ import subprocess
 import sys
 
 from src import helpers
+import argparse
 
 try:
     import termcolor
@@ -20,4 +21,8 @@ except ModuleNotFoundError:
 from src.main import main
 from src.consts import DATA_FILE
 
-main(sys.argv)
+parser = argparse.ArgumentParser(description='Learn stuff efficiently with two different modes, to learn and validate your knowledge.')
+parser.add_argument('file', metavar='PATH', nargs='?', default=None)
+flags = parser.parse_args()
+
+main(flags)
