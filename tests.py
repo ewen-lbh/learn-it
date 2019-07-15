@@ -57,76 +57,76 @@ class LearndataProcessorTests(unittest.TestCase):
         self.learnit.process_flags()
         self.learnit.process_learndata()
         self.assertEqual(self.learnit._askdata, [
-            ('foo',            {'bar','quux'}),
-            ('baz',            {'spam'}),
-            ('eggs',           {'spam'}),
-            ('spam',           {'wheel'}),
-            ('long key name',  {'long value name'}),
+            ('foo',            ['bar','quux']),
+            ('baz',            ['spam']),
+            ('eggs',           ['spam']),
+            ('spam',           ['wheel']),
+            ('long key name',  ['long value name']),
         ])
 
     def test_ask_for_answers(self):
         self.learnit.process_flags()
         self.learnit.process_learndata()
         self.assertEqual(self.learnit._askdata, [
-            ('foo',            {'bar','quux'}),
-            ('baz',            {'spam'}),
-            ('eggs',           {'spam'}),
-            ('spam',           {'wheel'}),
-            ('long key name',  {'long value name'}),
+            ('foo',            ['bar','quux']),
+            ('baz',            ['spam']),
+            ('eggs',           ['spam']),
+            ('spam',           ['wheel']),
+            ('long key name',  ['long value name']),
         ])
 
     def test_ask_for_questions(self):
-        self.learnit._flags['ask-for'] = 'questions'
         self.learnit.process_flags()
+        self.learnit._flags['ask-for'] = 'questions'
         self.learnit.process_learndata()
         self.learnit.process_ask_for()
 
         self.assertEqual(self.learnit._askdata, [
-            ('bar',   {'foo'}),
-            ('quux',  {'foo'}),
-            ('spam',  {'baz', 'eggs'}),
-            ('wheel', {'spam'}),
-            ('long value name', {'long key name'})
+            ('bar',   ['foo']),
+            ('quux',  ['foo']),
+            ('spam',  ['baz', 'eggs']),
+            ('wheel', ['spam']),
+            ('long value name', ['long key name'])
         ])
 
     def test_ask_for_both(self):
-        self.learnit._flags['ask-for'] = 'both'
         self.learnit.process_flags()
+        self.learnit._flags['ask-for'] = 'both'
         self.learnit.process_learndata()
         self.learnit.process_ask_for()
 
         self.assertEqual(self.learnit._askdata, [
-            ('foo',             {'bar','quux'}),
-            ('baz',             {'spam'}),
-            ('eggs',            {'spam'}),
-            ('spam',            {'wheel'}),
-            ('long key name',   {'long value name'}),
-            ('bar',             {'foo'}),
-            ('quux',            {'foo'}),
-            ('spam',            {'baz', 'eggs'}),
-            ('wheel',           {'spam'}),
-            ('long value name', {'long key name'})
+            ('foo',             ['bar','quux']),
+            ('baz',             ['spam']),
+            ('eggs',            ['spam']),
+            ('spam',            ['wheel']),
+            ('long key name',   ['long value name']),
+            ('bar',             ['foo']),
+            ('quux',            ['foo']),
+            ('spam',            ['baz', 'eggs']),
+            ('wheel',           ['spam']),
+            ('long value name', ['long key name'])
         ])
 
     
     def test_ask_order_alphabetical(self):
-        self.learnit._flags['ask-order'] = 'alphabetical'
         self.learnit.process_flags()
+        self.learnit._flags['ask-order'] = 'alphabetical'
         self.learnit.process_learndata()
         self.learnit.process_ask_for()
         self.learnit.process_ask_order()
 
         self.assertEqual(self.learnit._askdata, [
-            ('baz',            {'spam'}),
-            ('eggs',           {'spam'}),
-            ('foo',            {'bar','quux'}),
-            ('long key name',  {'long value name'}),
-            ('spam',           {'wheel'}),
+            ('baz',            ['spam']),
+            ('eggs',           ['spam']),
+            ('foo',            ['bar','quux']),
+            ('long key name',  ['long value name']),
+            ('spam',           ['wheel']),
         ])
 
     def test_ask_order_random(self):
-        self.learnit._flags['ask-order'] = 'random'
         self.learnit.process_flags()
+        self.learnit._flags['ask-order'] = 'random'
         self.learnit.process_learndata()
         self.learnit.process_ask_for()
         self.learnit.process_ask_order()
@@ -137,26 +137,26 @@ class LearndataProcessorTests(unittest.TestCase):
         # chance that this test will fail because of bad luck.
         # if it really fails because of bad luck, welp -- don't play lottery today.
         self.assertNotEqual(self.learnit._askdata, [
-                ('foo',            {'bar','quux'}),
-                ('baz',            {'spam'}),
-                ('eggs',           {'spam'}),
-                ('spam',           {'wheel'}),
-                ('long key name',  {'long value name'}),
+                ('foo',            ['bar','quux']),
+                ('baz',            ['spam']),
+                ('eggs',           ['spam']),
+                ('spam',           ['wheel']),
+                ('long key name',  ['long value name']),
         ])
 
     def test_ask_order_inverted(self):
-        self.learnit._flags['ask-order'] = 'inverted'
         self.learnit.process_flags()
+        self.learnit._flags['ask-order'] = 'inverted'
         self.learnit.process_learndata()
         self.learnit.process_ask_for()
         self.learnit.process_ask_order()
 
         self.assertEqual(self.learnit._askdata, [
-                ('long key name',  {'long value name'}),
-                ('spam',           {'wheel'}),
-                ('eggs',           {'spam'}),
-                ('baz',            {'spam'}),
-                ('foo',            {'bar','quux'}),
+                ('long key name',  ['long value name']),
+                ('spam',           ['wheel']),
+                ('eggs',           ['spam']),
+                ('baz',            ['spam']),
+                ('foo',            ['bar','quux']),
         ])
 
     
