@@ -114,8 +114,12 @@ class Learn_it:
             if type(answer) is not list:
                 answer = [answer]
 
+            # remove duplicates while maintaining order
+            from collections import OrderedDict
+            answer = list(OrderedDict.fromkeys(answer))
+
             self._askdata.append(
-                (question, set(answer))
+                (question, answer)
             )
 
     def process_ask_for(self, ask_for=None):
@@ -130,7 +134,6 @@ class Learn_it:
         flipped = list()
         for question, answers in self._askdata:
             for answer in answers:
-                print(answer)
                 # this question has already been added
                 # that happens if two questions have the same answer
                 # in the learndata
@@ -142,12 +145,12 @@ class Learn_it:
                     ][0])
 
                     answer, questions = flipped[idx]
-                    questions.add(question)
+                    questions.append(question)
                     flipped[idx] = (answer, questions)
                     continue
 
                 flipped.append(
-                    (answer, set([question]))
+                    (answer, [question])
                 )
 
         if ask_for == 'questions':
