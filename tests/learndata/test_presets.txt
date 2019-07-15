@@ -1,2 +1,0 @@
---ask-sentence UwU <> OwO
---preset languages

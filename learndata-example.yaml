@@ -1,0 +1,24 @@
+flags:
+  whitelist:
+      - spam
+      - eggs
+      - foo
+  ask-sentence: What's <> ?
+  ask-for: not a good f*ing value
+  allow-typos: true
+  grade-max: wrong-value-type
+  good-grade: 0.75
+  title: Example test
+  show-items-count: true
+  debug: true
+  unknown-flag: whatever
+  ask-order: normal
+
+# Here we have two possible answers
+foo: 
+    - bar
+    - quux
+baz: spam
+eggs: spam
+spam: wheel
+long key name: long value name

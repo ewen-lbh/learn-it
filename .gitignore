@@ -9,6 +9,8 @@ __pycache__/
 # Distribution / packaging
 .Python
 env/
+lnx_env/
+win_env/
 build/
 develop-eggs/
 dist/
@@ -62,3 +64,6 @@ target/
 
 #PyCharm
 .idea/
+
+# VSCode
+.vscode/
