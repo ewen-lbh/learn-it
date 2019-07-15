@@ -1,7 +1,6 @@
 import subprocess
 import sys
-
-from src import helpers
+import funcy
 import argparse
 
 try:
@@ -21,6 +20,17 @@ except ModuleNotFoundError:
 parser = argparse.ArgumentParser(description='Learn stuff efficiently with two different modes, to learn and validate your knowledge.')
 parser.add_argument('file', metavar='PATH', nargs='?', default=None)
 parser.add_argument('-B','--no-blacklist', help='Bypass --blacklist and ask for everything.', action='store_true')
+group = parser.add_mutually_exclusive_group()
+group.add_argument('-T', '--test', help="Engage testing mode", action="store_true")
+group.add_argument('-t', '--train', help="Engage training mode", action="store_true")
 flags = parser.parse_args()
 
-main(flags.file, {k:v for k,v in var(flags) if k != 'file'})
+if flags.test:
+    mode = 'testing'
+elif flags.train:
+    mode = 'training'
+else:
+    mode = None
+
+from main import mainloop
+mainloop(flags.file, mode, funcy.project(vars(flags), {'file','test','train'}))
