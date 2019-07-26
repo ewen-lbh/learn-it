@@ -1,5 +1,6 @@
 import yaml
 import random
+import os
 from termcolor import colored
 
 
@@ -66,8 +67,7 @@ class Learn_it:
 
     FLAGS_KEY_NAME = 'flags'
 
-    def __init__(self, file_path, mode, **cli_flags):
-
+    def __init__(self, file_path, mode, cli_flags):
         with open(file_path, 'r') as f:
             self._raw = f.read()
         self._data = yaml.load(self._raw, Loader=yaml.SafeLoader)
