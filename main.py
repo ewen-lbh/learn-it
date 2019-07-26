@@ -66,11 +66,18 @@ class Learn_it:
 
     FLAGS_KEY_NAME = 'flags'
 
-    def __init__(self, file_path, mode, cli_flags={}):
-
-        with open(file_path, 'r') as f:
+    def __init__(self, file_path_or_data, mode, cli_flags={}):
+        if type(file_path_or_data) is dict:
+            if 'flags' in file_path_or_data.keys():
+                self._raw = self._data = file_path_or_data
+        else: 
+            if os.path.isfile(file_path_or_data):
+                with open(file_path_or_data, 'r') as f:
             self._raw = f.read()
         self._data = yaml.load(self._raw, Loader=yaml.SafeLoader)
+            else:
+                print(f'File "{file_path_or_data}" not found')
+
         self.flags = self._data[self.FLAGS_KEY_NAME]
         self._cli_flags = cli_flags
         self.mode = mode
