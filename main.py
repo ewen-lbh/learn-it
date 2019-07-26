@@ -1,7 +1,7 @@
 import yaml
 import random
 from termcolor import colored
-
+import os
 
 class Learn_it:
 
