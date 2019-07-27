@@ -1,6 +1,6 @@
 import yaml
 import random
-from termcolor import colored
+from termcolor import colored, cprint
 import os
 
 class Learn_it:
@@ -62,19 +62,23 @@ class Learn_it:
             'allow-types': [str],
             'default': '✕ Fail',
         },
+        'metadata':{
+            'allow-types': [dict, str],
+            'default': {}
+        }
     }
 
-    FLAGS_KEY_NAME = 'flags'
+    FLAGS_KEY_NAME = '_options'
 
     def __init__(self, file_path_or_data, mode, cli_flags={}):
         if type(file_path_or_data) is dict:
-            if 'flags' in file_path_or_data.keys():
+            if self.FLAG_KEY_NAME in file_path_or_data.keys():
                 self._raw = self._data = file_path_or_data
         else: 
             if os.path.isfile(file_path_or_data):
                 with open(file_path_or_data, 'r') as f:
-            self._raw = f.read()
-        self._data = yaml.load(self._raw, Loader=yaml.SafeLoader)
+                    self._raw = f.read()
+                    self._data = yaml.load(self._raw, Loader=yaml.SafeLoader)
             else:
                 print(f'File "{file_path_or_data}" not found')
 
@@ -229,7 +233,7 @@ class Learn_it:
             string = print_fmt.format(
                 question=q, answer=self.format_answers_list(a), padding=padding(q))
             if i % 2 == 0:
-                string = colored(string, attrs="dark")
+                string = colored(string, color="white", attrs=['dark'])
             ret.append(string)
 
         return ret
@@ -246,34 +250,34 @@ class Learn_it:
             user_answer = input('>')
 
             if user_answer in answers:
-                print(self.flags['success-sentence'])
+                cprint(self.flags['success-sentence'], color='green')
             else:
-                print(self.flags['fail-sentence'])
+                cprint(self.flags['fail-sentence'], color='red')
                 if self.mode == 'training':
-                    print(f"Correct answer(s): {answers}")
+                    cprint(f"Correct answer(s): {answers}", color='red')
                 fails.append(question)
 
         self.fails = fails
+        self.wins  = len(self.askdata) - fails
 
 
 def mainloop(file=None, mode=None, flags={}):
-    if mode is None:
-        while mode not in {'training', 'testing'}:
-            mode = input("Mode ? (training|testing) >")
-
     learn_it = Learn_it(file, mode, flags)
     learn_it.process_flags()
     learn_it.process_askdata()
+    
+    def sum_up():
+        print('Your score     : ' + learn_it.compute_score())
+        print('Things to learn...\n\t'+'\n\t'.join(learn_it.list_fails()))
 
     if learn_it.flags['ask-for'] in {'answers', 'both'}:
         learn_it.askloop(ask_for='answers')
-        print('Your score     : ' + learn_it.compute_score())
-        print('Things to learn:\n\t'+'\n\t'.join(learn_it.list_fails()))
+        sum_up()
 
     if learn_it.flags['ask-for'] in {'questions', 'both'}:
         learn_it.askloop(ask_for='questions')
-        print('Your score     : ' + learn_it.compute_score())
-        print('Things to learn:\n\t'+'\n\t'.join(learn_it.list_fails()))
+        sum_up()
+
 
 
 if __name__ == "__main__":

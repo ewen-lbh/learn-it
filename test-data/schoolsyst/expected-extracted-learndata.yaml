@@ -1,0 +1,12 @@
+_options:
+  ask-sentence: "English: Verbes irréguliers"
+  metadata:
+    notion: "Verbes irréguliers"
+    runs-count:
+      testing: '0'
+      training: '0'
+    subject: english
+  whitelist: []
+hit: hit, hit, hit
+tisser: weave, wove, woven
+casser: break, broke, broken
