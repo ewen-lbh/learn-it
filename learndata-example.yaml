@@ -1,4 +1,4 @@
-flags:
+_options:
   whitelist:
       - spam
       - eggs
