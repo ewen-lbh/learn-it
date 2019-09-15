@@ -1,6 +1,8 @@
 import yaml
 import random
-from termcolor import colored
+from termcolor import colored, cprint
+import click
+import time
 
 
 class Learn_it:
@@ -62,9 +64,17 @@ class Learn_it:
             'allow-types': [str],
             'default': '✕ Fail',
         },
+        'hide-timeout': {
+            'allow-types': [int],
+            'default': 0,
+        },
+        'math-delimiter': {
+            'allow-types': [str],
+            'default': '$$',
+        },
     }
 
-    FLAGS_KEY_NAME = 'flags'
+    FLAGS_KEY_NAME = 'options'
 
     def __init__(self, file_path, mode, **cli_flags):
 
@@ -124,6 +134,24 @@ class Learn_it:
     # >  ASK DATA PROCESSING   <
     # --------------------------
 
+    def process_math_answer(self, answer):
+        from sympy.parsing.latex import parse_latex
+        from sympy.simplify import simplify
+        from sympy import oo
+        # LaTeX --> SymPy
+        expr = parse_latex(answer)
+        # Simplify the expression
+        expr = simplify(expr, ratio=oo)
+        # SymPy --> unicode string
+        return str(expr)
+
+    def process_answer(self, answer):
+        delimiter = self.flags['math-delimiter']
+        if answer.startswith(delimiter) and answer.endswith(delimiter):
+            return self.process_math_answer(answer.replace('$$', ''))
+        else:
+            return answer
+
     def process_learndata(self):
         self.askdata = list()
         for question, answer in self._data.items():
@@ -132,6 +160,8 @@ class Learn_it:
 
             if type(answer) is not list:
                 answer = [answer]
+
+            answer = [self.process_answer(ans) for ans in answer]
 
             # remove duplicates while maintaining order
             from collections import OrderedDict
@@ -212,6 +242,8 @@ class Learn_it:
 
     def list_fails(self):
         import funcy
+        if not self.fails: return []
+
         max_len = max([len(e) for e in self.fails])
         def padding(k): return ' ' * (max_len - len(k))
 
@@ -222,12 +254,56 @@ class Learn_it:
             string = print_fmt.format(
                 question=q, answer=self.format_answers_list(a), padding=padding(q))
             if i % 2 == 0:
-                string = colored(string, attrs="dark")
+                string = colored(string, attrs=["dark"])
             ret.append(string)
 
         return ret
 
+    def icon(self, name:str, right_margin:int=0):
+        return colored({
+            'question': '?',
+            'error'   : '✕',
+            'success' : '✓',
+            'info'    : 'i',
+        }[name], {
+            'question': 'blue',
+            'error'   : 'red',
+            'success' : 'green',
+            'info'    : 'blue',
+        }[name]) + ' ' * right_margin
+
+    def aligned(self, string:str, align:str="center", width:int=0):
+        if width == 0: width = len(string)
+
+        if align == 'center':
+            return '{:^{w}}'.format(string, w=width)
+        elif align == 'right':
+            return '{:>{w}}'.format(string, w=width)
+        else:
+            return '{:{w}}' .format(string, w=width)
+
+
+    def box(self, content:str, color:str='white', pad:int=1, align:str="center", width:int=0):
+        lines = content.split('\n')
+        width = width or max(len(l) for l in lines)
+        boxed = []
+
+        boxed.append('╭' + '─' * (width+pad*2) + '╮')
+        for l in lines: boxed.append('│' + ' ' * pad + self.aligned(l, align, width) + ' ' * pad + '│')
+        boxed.append('╰' + '─' * (width+pad*2) + '╯')
+
+        print('\n'.join(boxed))
+
+    def question_msg(self, *args, **kwargs):
+        print(self.icon('question'), *args, **kwargs)
+    def error_msg(self, *args, **kwargs):
+        print(self.icon('error'), *args, **kwargs)
+    def success_msg(self, *args, **kwargs):
+        print(self.icon('success'), *args, **kwargs)
+
+
     def askloop(self, ask_for):
+        import sys
         if ask_for == 'questions':
             askdata = self.get_flipped_askdata()
         else:
@@ -235,39 +311,77 @@ class Learn_it:
 
         fails = list()
         for question, answers in askdata:
-            print(self.get_ask_sentence(question))
-            user_answer = input('>')
+            ask_sentence = self.get_ask_sentence(question)
+            self.question_msg(ask_sentence, end="")
+            user_answer = self.process_answer(input())
 
+            sys.stdout.write('\033[F')
             if user_answer in answers:
-                print(self.flags['success-sentence'])
+                self.success_msg(ask_sentence + user_answer)
             else:
-                print(self.flags['fail-sentence'])
-                if self.mode == 'training':
-                    print(f"Correct answer(s): {answers}")
                 fails.append(question)
+                if self.mode == 'testing':
+                    self.error_msg(ask_sentence + user_answer)
+                else:
+                    correct_answers = ' ou '.join(colored(ans, 'yellow') for ans in answers) + ' ' * len(user_answer)
+                    censored_answers = colored('█' * len(', '.join(answers)), 'grey')
+                    hide_timeout = self.flags['hide-timeout']
+
+                    self.error_msg(ask_sentence + correct_answers)
+
+                    if hide_timeout:
+                        time.sleep(hide_timeout)
+                    else:
+                        input()
+                        sys.stdout.write('\033[F')
+
+                    sys.stdout.write('\033[F')
+                    self.error_msg(ask_sentence + censored_answers)
 
         self.fails = fails
+        
 
-
+from yaspin import yaspin
 def mainloop(file=None, mode=None, flags={}):
     if mode is None:
         while mode not in {'training', 'testing'}:
             mode = input("Mode ? (training|testing) >")
 
-    learn_it = Learn_it(file, mode, flags)
-    learn_it.process_flags()
-    learn_it.process_askdata()
+    learn_it = Learn_it(file, mode, **flags)
+    with yaspin().white.arc as spinner:
+        spinner.text = "Processing options..."
+        learn_it.process_flags()
+        spinner.text = "Processing data..."
+        learn_it.process_askdata()
+        spinner.text = "Processing done."
+        spinner.ok(learn_it.icon('success', right_margin=1))
+
+    learn_it.box(f"""{learn_it.flags['title']}
+
+{'Items'}  {len(learn_it.askdata)}
+{'Mode'}   {mode}""", align='left')
 
     if learn_it.flags['ask-for'] in {'answers', 'both'}:
         learn_it.askloop(ask_for='answers')
-        print('Your score     : ' + learn_it.compute_score())
-        print('Things to learn:\n\t'+'\n\t'.join(learn_it.list_fails()))
+        fails = learn_it.list_fails()
+        if fails: 
+            to_learn = 'To learn:\n'+'\n'.join(fails)
+        else:
+            to_learn = 'Nothing to learn'
+
+        learn_it.box(f"""{learn_it.compute_score()}
+
+{to_learn}""")
 
     if learn_it.flags['ask-for'] in {'questions', 'both'}:
         learn_it.askloop(ask_for='questions')
         print('Your score     : ' + learn_it.compute_score())
-        print('Things to learn:\n\t'+'\n\t'.join(learn_it.list_fails()))
+        fails = learn_it.list_fails()
+        if fails: 
+            print('Things to learn:\n\t'+'\n\t'.join(fails))
+        else:
+            print('Nothing to learn 😉')
 
 
 if __name__ == "__main__":
-    mainloop()
+    mainloop(file="./russe.yaml")

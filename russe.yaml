@@ -1,0 +1,14 @@
+options:
+  ask-sentence: "<>: "
+  allow-typos: true
+  good-grade: 0.95
+  title: Слова
+  show-items-count: true
+
+déjeuner:      обед
+répondre:      ответь
+comprendre:    понимать
+ventre:        живот
+montrer:       показивать
+aider:         помогать
+décider:       решить
