@@ -13,7 +13,7 @@ def to_latex(equation):
         sys.stderr.write('ERROR: unexpected mathml usage. Should not happen')
         sys.exit(3)
     # try x times to get MathML cloud result:
-    for i in range(1, 5):
+    for _ in range(1, 5):
         # print "Attempt calling MathML Cloud Server: {}".format(i)
         mathml = _call_mathml_cloud(equation, mathtype)
         if mathml != 'null':
