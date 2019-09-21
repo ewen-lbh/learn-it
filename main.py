@@ -311,17 +311,17 @@ class Learn_it:
 
         fails = list()
         for question, answers in askdata:
-            ask_sentence = self.get_ask_sentence(question)
+            ask_sentence = self.get_ask_sentence(question) + "  \033[1m\033[36m"
             self.question_msg(ask_sentence, end="")
             user_answer = self.process_answer(input())
 
-            sys.stdout.write('\033[F')
+            sys.stdout.write('\033[0m\033[F')
             if user_answer in answers:
-                self.success_msg(ask_sentence + user_answer)
+                self.success_msg(ask_sentence + '\033[0m' + colored(user_answer, 'green'))
             else:
                 fails.append(question)
                 if self.mode == 'testing':
-                    self.error_msg(ask_sentence + user_answer)
+                    self.error_msg(ask_sentence + '\033[0m' + user_answer)
                 else:
                     correct_answers = ' ou '.join(colored(ans, 'yellow') for ans in answers) + ' ' * len(user_answer)
                     censored_answers = colored('█' * len(', '.join(answers)), 'grey')
