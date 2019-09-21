@@ -1,0 +1,9 @@
+options:
+  ask-sentence: Verbes irréguliers
+  metadata:
+    notion: Verbes irréguliers
+    runs-count:
+      testing: '0'
+      training: '0'
+    subject: test-data
+  whitelist: []

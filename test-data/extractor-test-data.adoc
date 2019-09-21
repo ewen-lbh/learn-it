@@ -1,0 +1,15 @@
+= Verbes irréguliers =
+:hardbreaks:
+
+casser :: break, broke, broken
+tisser :: weave, wove, woven
+hit    :: hit, hit, hit
+
+== Some section ==
+#no-learndata
+some::
+    data
+that::
+    should not be
+parsed::
+    :/

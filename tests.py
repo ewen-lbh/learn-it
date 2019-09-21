@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import unittest
 import yaml
 import main
@@ -47,6 +48,8 @@ class LearndataProcessorTests(unittest.TestCase):
             "debug": True,
             "success-sentence": '✓ Success!',
             "fail-sentence": '✕ Fail',
+            "hide-timeout": 0,
+            "math-delimiter": '$$',
         }
 
         self.learnit.strip_flags()
@@ -159,6 +162,60 @@ class CLITests(unittest.TestCase):
         self.learnit.fails = ['spam', 'foo', 'long key name']
         self.assertEqual(self.learnit.compute_score(), '40%')
 
+import extract
+from os.path import join as path
+from os.path import dirname
+import os
+class IntegrationTests(unittest.TestCase):
+    def setUp(self):
+        self.base_dir = path(dirname(dirname(__file__)), 'test-data')
+        self.extractor = extract.Extractor(path(self.base_dir, 'extractor-test-data.adoc'))
+        self.extractor.TITLE_FMT = '%(Subject)s: %(notion)s'
+        with open(path(self.base_dir,'extractor-expected-output.yaml')) as f:
+            self.expected_dict = dict(yaml.load(f.read(), Loader=yaml.BaseLoader))
+    
+    def test_destination(self):
+        actual = self.extractor._dst
+        expected = path(self.base_dir,'extractor-expected-output.yaml')
+        self.assertEqual(actual, expected)
+
+    def test_get_infos(self):
+        self.extractor.get_infos()
+        actual = self.extractor.infos
+        expected = {
+            'subject': 'test-data',
+            'notion': 'Verbes irréguliers'
+        }
+        self.assertEqual(actual, expected)
+
+    def test_flags(self):
+        self.extractor.get_infos()
+        self.extractor.compute_flags()
+        actual = self.extractor._flags
+        expected = self.expected_dict[main.Learn_it.FLAGS_KEY_NAME]
+        self.assertEqual(actual, expected)
+
+    def test_data(self):
+        self.extractor.compute_data()
+        actual = self.extractor._data
+        expected = {k:v for k,v in self.expected_dict.items() if k != main.Learn_it.FLAGS_KEY_NAME}
+        self.assertEqual(actual, expected)
+
+    def test_files(self):
+        self.extractor.get_infos()
+        self.extractor.compute_flags()
+        self.extractor.compute_data()
+        self.extractor.save_file()
+
+        with open(self.extractor._dst, 'r') as f:
+            actual = f.read()
+        with open(path(self.base_dir,'extractor-expected-output.yaml'), 'r') as f:
+            expected = f.read()
+        self.assertEqual(actual, expected)
+    
+    def tearDown(self):
+        if os.path.isfile(self.extractor._dst):
+            os.remove(self.extractor._dst)
 
 if __name__ == "__main__":
     unittest.main()
