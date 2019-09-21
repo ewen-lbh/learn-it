@@ -3,6 +3,7 @@ import random
 from termcolor import colored, cprint
 import click
 import time
+import os
 
 
 class Learn_it:
@@ -22,7 +23,7 @@ class Learn_it:
         },
         'ask-sentence': {
             'allow-types': [str],
-            'default': "What is <> ?",
+            'default': "<>",
         },
         'ask-for': {
             'allow-values': ['questions', 'answers', 'both'],
@@ -81,7 +82,7 @@ class Learn_it:
         with open(file_path, 'r') as f:
             self._raw = f.read()
         self._data = yaml.load(self._raw, Loader=yaml.SafeLoader)
-        self.flags = self._data[self.FLAGS_KEY_NAME]
+        self.flags = self._data.get(self.FLAGS_KEY_NAME, {})
         self._cli_flags = cli_flags
         self.mode = mode
 
@@ -124,6 +125,14 @@ class Learn_it:
                 new_flags[flag] = default_value
 
         self.flags.update(new_flags)
+
+        # Take filename as a title
+        if not self.flags['title']:
+            filepath = self._cli_flags['file']
+            parent_path, filename = os.path.split(filepath)
+            filename, _ = os.path.splitext(filename)
+            direct_folder = os.path.basename(parent_path)
+            self.flags['title'] = direct_folder + '/' + filename.title()
 
     def process_flags(self):
         self.add_cli_flags()
@@ -215,6 +224,9 @@ class Learn_it:
     # >  CLI-RELATED STUFF   <
     # ------------------------
 
+    def get_largest_key_length(self):
+        return max(len(k) for k, v in self.askdata)
+
     def compute_score(self):
         grade_max      = self.flags['grade-max']
         total          = len(self.askdata)
@@ -253,8 +265,9 @@ class Learn_it:
         for i, (q, a) in enumerate(failed_items.items()):
             string = print_fmt.format(
                 question=q, answer=self.format_answers_list(a), padding=padding(q))
-            if i % 2 == 0:
-                string = colored(string, attrs=["dark"])
+            # FIXME: Currently the commented-out code below breaks Learn_it.box alignement (all ANSI Escapes are considered chars)
+            # if i % 2 == 0:
+            #     string = colored(string, attrs=["dark"])
             ret.append(string)
 
         return ret
@@ -283,12 +296,20 @@ class Learn_it:
             return '{:{w}}' .format(string, w=width)
 
 
-    def box(self, content:str, color:str='white', pad:int=1, align:str="center", width:int=0):
+    def box(self, content:str, color:str='white', pad:int=1, align:str="center", width:int=0, first_line_is_title:bool=True):
+        from math import ceil
         lines = content.split('\n')
         width = width or max(len(l) for l in lines)
         boxed = []
+        if first_line_is_title:
+            title = lines[0]
+            lines = lines[1:] # Blank line jump + all other lines
+            title = colored(title, 'cyan', attrs=['bold']) + ' '  * (width - len(title))
 
         boxed.append('╭' + '─' * (width+pad*2) + '╮')
+        if first_line_is_title:
+            boxed.append('│' + ' ' * pad + title + ' ' * pad + '│')
+            boxed.append('│' + '-' * (width+pad*2) + '│')
         for l in lines: boxed.append('│' + ' ' * pad + self.aligned(l, align, width) + ' ' * pad + '│')
         boxed.append('╰' + '─' * (width+pad*2) + '╯')
 
@@ -311,7 +332,8 @@ class Learn_it:
 
         fails = list()
         for question, answers in askdata:
-            ask_sentence = self.get_ask_sentence(question) + "  \033[1m\033[36m"
+            whitespace = self.get_largest_key_length() - len(question)
+            ask_sentence = self.get_ask_sentence(question) + ' ' * whitespace + " \033[1m\033[36m"
             self.question_msg(ask_sentence, end="")
             user_answer = self.process_answer(input())
 
@@ -339,6 +361,16 @@ class Learn_it:
                     self.error_msg(ask_sentence + censored_answers)
 
         self.fails = fails
+
+    def summary(self):
+        fails = self.list_fails()
+        if fails: 
+            to_learn = 'To learn:\n'+'\n'.join(fails)
+        else:
+            to_learn = 'Nothing to learn'
+
+        self.box(f"""{self.compute_score()}
+{to_learn}""", align='left')
         
 
 from yaspin import yaspin
@@ -357,21 +389,12 @@ def mainloop(file=None, mode=None, flags={}):
         spinner.ok(learn_it.icon('success', right_margin=1))
 
     learn_it.box(f"""{learn_it.flags['title']}
-
 {'Items'}  {len(learn_it.askdata)}
 {'Mode'}   {mode}""", align='left')
 
     if learn_it.flags['ask-for'] in {'answers', 'both'}:
         learn_it.askloop(ask_for='answers')
-        fails = learn_it.list_fails()
-        if fails: 
-            to_learn = 'To learn:\n'+'\n'.join(fails)
-        else:
-            to_learn = 'Nothing to learn'
-
-        learn_it.box(f"""{learn_it.compute_score()}
-
-{to_learn}""")
+        learn_it.summary()
 
     if learn_it.flags['ask-for'] in {'questions', 'both'}:
         learn_it.askloop(ask_for='questions')
