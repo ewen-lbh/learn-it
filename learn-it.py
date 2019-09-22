@@ -31,10 +31,12 @@ class SmartFormatter(argparse.HelpFormatter):
         # this is the RawTextHelpFormatter._split_lines
         return argparse.HelpFormatter._split_lines(self, text, width)
 
+# TODO: Create ~/.config/learn-it/config.yaml and ~/.config/learn-it/option-presets.yaml to store global options like learndata default directory
 parser = argparse.ArgumentParser(description='Learn stuff efficiently with two different modes, to learn and validate your knowledge.', formatter_class=SmartFormatter)
 parser.add_argument('command', choices=["test", "train", "extract"], help=commands_help)
-parser.add_argument('file', metavar='PATH', help="The path of the file on which you will apply the command.")
+parser.add_argument('files', metavar='FILE', help="The paths(s) of the file(s) on which you will apply the command. Merges learn data but only keep the options from the first file.", nargs='+')
 parser.add_argument('-B','--no-blacklist', help='Bypass the blacklist and ask for everything.', action='store_true')
+# TODO: parser.add_argument('-p','--progress-mode', help="Automatically add answers found to the blacklist. Has no effect when used with the `train` command.", action='store_true')
 flags = parser.parse_args()
 
 def custom_keyboardinterrupt_message(function):
@@ -43,20 +45,21 @@ def custom_keyboardinterrupt_message(function):
     except KeyboardInterrupt:
         cprint("\nAnnulé", 'red')
 
-if not os.path.isfile(flags.file):
-    exit("The provided file does not exist.")
+for file in flags.files:
+    if not os.path.isfile(file):
+        exit("The provided file does not exist.")
 
 if flags.command == 'test':
     from main import mainloop
-    custom_keyboardinterrupt_message(lambda: mainloop(flags.file, 'test', vars(flags)))
+    custom_keyboardinterrupt_message(lambda: mainloop(flags.files, 'test', vars(flags)))
 
 elif flags.command == 'train':
     from main import mainloop
-    custom_keyboardinterrupt_message(lambda: mainloop(flags.file, 'train', vars(flags)))
+    custom_keyboardinterrupt_message(lambda: mainloop(flags.files, 'train', vars(flags)))
 
 elif flags.command == 'extract':
     from extract import Extractor
-    extractor = Extractor(flags.file)
+    extractor = Extractor(flags.files[0])
     extractor.extract()
 
 else:

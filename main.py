@@ -77,12 +77,23 @@ class Learn_it:
 
     FLAGS_KEY_NAME = 'options'
 
-    def __init__(self, file_path, mode, **cli_flags):
+    def __init__(self, file_paths, mode, **cli_flags):
+        self._raws = []
+        self._datas = []
 
-        with open(file_path, 'r') as f:
-            self._raw = f.read()
-        self._data = yaml.load(self._raw, Loader=yaml.SafeLoader)
-        self.flags = self._data.get(self.FLAGS_KEY_NAME, {})
+        for file_path in file_paths:
+            with open(file_path, 'r') as f:
+                raw = f.read()
+                self._raws.append(raw)
+                self._datas.append(yaml.load(raw, Loader=yaml.SafeLoader))
+        
+        # Get options for the FIRST data set
+        self.flags = self._datas[0].get(self.FLAGS_KEY_NAME, {})
+        # Merge the data
+        self._data = {}
+        for dataset in self._datas:
+            self._data.update(dataset)
+        
         self._cli_flags = cli_flags
         self.mode = mode
 
@@ -155,6 +166,8 @@ class Learn_it:
         return str(expr)
 
     def process_answer(self, answer):
+        answer = str(answer)
+
         delimiter = self.flags['math-delimiter']
         if answer.startswith(delimiter) and answer.endswith(delimiter):
             return self.process_math_answer(answer.replace('$$', ''))
@@ -322,6 +335,14 @@ class Learn_it:
     def success_msg(self, *args, **kwargs):
         print(self.icon('success'), *args, **kwargs)
 
+    # The same as idea as self.process_answer, except this runs every time on user input
+    def normalize_answer(self, answer):
+        import re
+        lowered = str(answer).lower().strip()
+        return re.sub(r'[  ]+', ' ', lowered) # Regular space & nbsp.
+
+    def is_correct(self, user_answer, correct_answers):
+        return self.normalize_answer(user_answer) in [self.normalize_answer(ans) for ans in correct_answers]
 
     def askloop(self, ask_for):
         import sys
@@ -335,10 +356,10 @@ class Learn_it:
             whitespace = self.get_largest_key_length() - len(question)
             ask_sentence = self.get_ask_sentence(question) + ' ' * whitespace + " \033[1m\033[36m"
             self.question_msg(ask_sentence, end="")
-            user_answer = self.process_answer(input())
+            user_answer = input()
 
             sys.stdout.write('\033[0m\033[F')
-            if user_answer in answers:
+            if self.is_correct(user_answer, answers):
                 self.success_msg(ask_sentence + '\033[0m' + colored(user_answer, 'green'))
             else:
                 fails.append(question)
