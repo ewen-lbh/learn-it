@@ -89,6 +89,8 @@ class Learn_it:
         
         # Get options for the FIRST data set
         self.flags = self._datas[0].get(self.FLAGS_KEY_NAME, {})
+        # Compute title from titles of each file, if the file's _data contains a self.FLAGS_KEY_NAME key, that contains a 'title' key
+        self.flags['title'] = ', '.join(_data[self.FLAGS_KEY_NAME]['title'] for _data in self._datas if _data.get(self.FLAGS_KEY_NAME, None).get('title', None) is not None)
         # Merge the data
         self._data = {}
         for dataset in self._datas:
@@ -309,7 +311,7 @@ class Learn_it:
             return '{:{w}}' .format(string, w=width)
 
 
-    def box(self, content:str, color:str='white', pad:int=1, align:str="center", width:int=0, first_line_is_title:bool=True):
+    def box(self, content:str, color:str='white', pad:int=1, align:str="center", width:int=0, first_line_is_title:bool=True, margin:int=1):
         from math import ceil
         lines = content.split('\n')
         width = width or max(len(l) for l in lines)
@@ -326,7 +328,7 @@ class Learn_it:
         for l in lines: boxed.append('│' + ' ' * pad + self.aligned(l, align, width) + ' ' * pad + '│')
         boxed.append('╰' + '─' * (width+pad*2) + '╯')
 
-        print('\n'.join(boxed))
+        print('\n' * margin + '\n'.join(boxed) + '\n' * margin)
 
     def question_msg(self, *args, **kwargs):
         print(self.icon('question'), *args, **kwargs)
@@ -410,8 +412,9 @@ def mainloop(file=None, mode=None, flags={}):
         spinner.ok(learn_it.icon('success', right_margin=1))
 
     learn_it.box(f"""{learn_it.flags['title']}
+{'Files'}  {len(learn_it._datas)}
 {'Items'}  {len(learn_it.askdata)}
-{'Mode'}   {mode}""", align='left')
+{'Mode'}   {mode}ing""", align='left')
 
     if learn_it.flags['ask-for'] in {'answers', 'both'}:
         learn_it.askloop(ask_for='answers')
