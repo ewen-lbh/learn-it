@@ -17,12 +17,12 @@ class LearndataProcessorTests(unittest.TestCase):
             "debug": True,
             "ask-order": "normal",
         }
-        self.learnit = main.Learn_it('./learndata-example.yaml', 'training')
+        self.learnit = main.Learn_it(['learndata-example.yaml'], 'training')
 
     def test_file_loads(self):
         with open('./learndata-example.yaml') as f:
             filecontents = f.read()
-        self.assertEqual(self.learnit._raw, filecontents)
+        self.assertEqual(self.learnit._raws[0], filecontents)
 
     def test_add_cli_flags(self):
         self.learnit._cli_flags = dict(ask_sentence="What's «<>» ?")
@@ -130,7 +130,7 @@ class LearndataProcessorTests(unittest.TestCase):
 
 class CLITests(unittest.TestCase):
     def setUp(self):
-        self.learnit = main.Learn_it('./learndata-example.yaml', 'training')
+        self.learnit = main.Learn_it(['learndata-example.yaml'], 'training')
         self.learnit.process_flags()
         self.learnit.process_askdata()
 
@@ -176,7 +176,7 @@ class IntegrationTests(unittest.TestCase):
     
     def test_destination(self):
         actual = self.extractor._dst
-        expected = path(self.base_dir,'extractor-expected-output.yaml')
+        expected = path(path(self.base_dir, 'learndata'),'extractor-test-data.yaml')
         self.assertEqual(actual, expected)
 
     def test_get_infos(self):
